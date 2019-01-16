@@ -1,0 +1,63 @@
+@import "mixins/mixins";
+@import "common/var";
+
+@include b(app-sidebar){
+  height: 100%;
+  background-color: $--ef-color-primary;
+  z-index: 1000;
+  position: relative;
+  color: white;
+
+  @include e(header){
+    width: 100%;
+    height: 24%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  @include e(items-container){
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+}
+
+@include b(app-sidebar-item){
+  width: 100%;
+  height: 5rem;
+  background-color: $--ef-color-primary;
+  flex-grow: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: white;
+
+  @include when(active){
+    background-color: white;
+    color: $--ef-color-primary !important;
+    @include e(icon){
+      color: $--ef-color-primary !important;
+    }
+  }
+
+  @include e(icon){
+    font-size: 1.2rem;
+    margin-left: 5%;
+    margin-right: 5%;
+    color: white !important;
+  }
+
+  &:hover{
+    color: $--ef-color-primary !important;
+  }
+
+  @include e(title){
+    letter-spacing: 2px;
+  }
+}
