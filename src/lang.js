@@ -5,10 +5,11 @@ export default {
   getLang(defaultLang) {
     let localLang = window.localStorage.getItem('user_lang')
 
-    if (localLang === null) {
+    /*if (localLang === null) {
       return defaultLang
     } else {
       return localLang
-    }
+    }*/
+    return 'en'
   }
 }

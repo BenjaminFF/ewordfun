@@ -1,5 +1,5 @@
 let slideLeftIn= [
-    {transform:'translateX(-300%)'},
+    {transform:'translateX(-100%)'},
     { transform: 'translateX(0)' }
   ]
 let slideLeftOut=[

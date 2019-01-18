@@ -28,22 +28,23 @@ module.exports = {
     pwHint:['password must greater than 6','password must contain number and character','password cannot be empty','password cannot contain chinese'],
     rCodeHint:['Registration Code cannot be empty!','Registration Code is incorrect']
   },
-  addText:"+Add Card",
   createDialog:{
-    header:"A New Set",
-    title:"Title",
-    subTitle:"description",
+    header:"New Set!",
+    name:"name",
+    introduction:"introduction",
     folder:"Folder",
     folderHint:"only one folder!",
-    titleEmpty:'There is no Title!',
-    editHeader:'modified Set'
+    nameEmpty:'There is no Title!',
+    editHeader:'modified Set',
+    submit:'CREATE'
   },
   createSet:{
-    termEmpty:' term is empty,please fill it up!',
-    defEmpty:' definition is empty,please fill it up!',
+    termEmpty:'term is empty in the %{row} row,please fill it up!',
+    defEmpty:'row definition in the %{row} row,please fill it up!',
     setLength:'A Set at least contains 3 cards!',
     termHint:'term...',
     definitionHint:'definition...',
+    addCard:"+Add Card",
   },
   deleteDialog:{
     delete:'Delete',

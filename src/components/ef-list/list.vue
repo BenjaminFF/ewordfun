@@ -1,15 +1,16 @@
 <template>
-  <div class="el-list"  @mouseenter="nScrollbarData.thumbVisible=true"
+  <div class="el-list" @mouseenter="nScrollbarData.thumbVisible=true"
        @mouseleave="nScrollbarData.thumbVisible=false">
     <div
-         :class="[
+      :class="[
            'el-list__wrap',{
               'is-vertical':orientation=='vertical',
               'is-horizontal':orientation=='horizontal',
            }
          ]"
-         :style="{marginRight:mMarginRight+'px',marginBottom:mMarginBottom+'px',width:mWrapWidth,height:mWrapHeight}">
-      <div style="flex-shrink: 0;flex-grow: 0" :style="{display:this.orientation=='horizontal'?'flex':'block'}">
+      :style="{marginRight:mMarginRight+'px',marginBottom:mMarginBottom+'px',width:mWrapWidth,height:mWrapHeight}">
+      <div style="flex-shrink: 0;flex-grow: 0;padding-top: 5rem;padding-bottom: 5rem"
+           :style="{display:this.orientation=='horizontal'?'flex':'block'}">
         <slot></slot>
       </div>
     </div>
@@ -20,8 +21,8 @@
               'is-horizontal':orientation=='horizontal',
            }
          ]"
-         @mousedown="handleTrackClick($event)"
-         v-if="nScrollbarData.visible">
+      @mousedown="handleTrackClick($event)"
+      v-if="nScrollbarData.visible">
       <div class="el-list__scrollbar__thumb"
            @mousedown="thumbMouseDown($event)"
            @mousemove="thumbMouseMove($event)"
@@ -35,274 +36,284 @@
 </template>
 <script>
   import keyframe from './keyframes'
-    export default {
-      name: "EfList",
-      data(){
-        return{
-          nScrollbarData:{},
-          flags:{},
-          scrollbarStyle:{},
-          thumbStyle:{}
-        }
-      },
-      props:{
-        orientation:{
-          type:String,
-          default:'vertical'
-        },
 
-        list:{
-          type: Array,
-          required:true
-        },
+  export default {
+    name: "EfList",
+    data() {
+      return {
+        nScrollbarData: {},
+        flags: {},
+        scrollbarStyle: {},
+        thumbStyle: {}
+      }
+    },
+    props: {
+      orientation: {
+        type: String,
+        default: 'vertical'
+      },
 
-        wrapWidth:{
-          type:String,
-          default:'30rem'
-        },
+      list: {
+        type: Array,
+        required: true
+      },
 
-        wrapHeight:{
-          type:String,
-          default:'30rem'
+      wrapWidth: {
+        type: String,
+        default: '30rem'
+      },
+
+      wrapHeight: {
+        type: String,
+        default: '30rem'
+      }
+    },
+    computed: {
+      mWrapWidth() {
+        return this.orientation == 'vertical' ? 'auto' : this.wrapWidth
+      },
+      mWrapHeight() {
+        return this.orientation == 'vertical' ? this.wrapHeight : 'auto'
+      },
+      mMarginRight() {
+        return this.orientation == 'vertical' ? -this.nScrollbarData.width : 0
+      },
+      mMarginBottom() {
+        return this.orientation == 'vertical' ? 0 : -this.nScrollbarData.height
+      }
+    },
+    created() {
+      window.addEventListener('scroll', this.handleScroll, true);
+    },
+    mounted() {
+      let warp = this.$el.children[0];
+      this.initnScrollbarData(warp);
+      this.flags = {
+        isAdding: false,
+        isDeleting: false
+      }
+    },
+    methods: {
+      handleScroll() {
+        this.updateThumb();
+      },
+      thumbMouseDown(event) {
+        this.nScrollbarData.thumbOnMove = true;
+        this.nScrollbarData.thumbPivotX = event.offsetX;
+        this.nScrollbarData.thumbPivotY = event.offsetY;
+      },
+      thumbMouseMove(event) {
+        if (this.nScrollbarData.thumbOnMove == true) {
+          let warp = this.$el.children[0];
+          if (this.orientation == 'vertical') {
+            let offsetY = event.offsetY - this.nScrollbarData.thumbPivotY;
+            warp.scrollTop += offsetY;
+          } else if (this.orientation == 'horizontal') {
+            let offsetX = event.offsetX - this.nScrollbarData.thumbPivotX;
+            warp.scrollLeft += offsetX;
+          }
         }
       },
-      computed:{
-        mWrapWidth(){
-          return this.orientation=='vertical'?'auto':this.wrapWidth
-        },
-        mWrapHeight(){
-          return this.orientation=='vertical'?this.wrapHeight:'auto'
-        },
-        mMarginRight(){
-          return this.orientation=='vertical'?-this.nScrollbarData.width:0
-        },
-        mMarginBottom(){
-          return this.orientation=='vertical'?0:-this.nScrollbarData.height
+      handleTrackClick(event) {
+        if (event.target.className != 'el-list__scrollbar__thumb') {
+          let warp = this.$el.children[0];
+          if (this.orientation == 'vertical') {
+            if (event.offsetY <= this.nScrollbarData.thumbMoveY) {
+              let scrollTop = Math.ceil(event.offsetY * warp.scrollHeight / warp.clientHeight);
+              this.smoothScroll(scrollTop, warp, 200);
+            } else {
+              let scrollTop = Math.ceil((event.offsetY - this.nScrollbarData.thumbHeight) * warp.scrollHeight / warp.clientHeight);
+              this.smoothScroll(scrollTop, warp, 200);
+            }
+          } else if (this.orientation == 'horizontal') {
+            if (event.offsetX <= this.nScrollbarData.thumbMoveX) {
+              let scrollLeft = Math.ceil(event.offsetX * warp.scrollWidth / warp.clientWidth);
+              this.smoothScroll(scrollLeft, warp, 200);
+            } else {
+              let scrollLeft = Math.ceil((event.offsetX - this.nScrollbarData.thumbWidth) * warp.scrollWidth / warp.clientWidth);
+              this.smoothScroll(scrollLeft, warp, 200);
+            }
+          }
         }
       },
-      created(){
-        window.addEventListener('scroll', this.handleScroll,true);
+      //linear,duration为ms
+      smoothScroll(end, el, duration) {
+        let flashTimes = duration / 1000 * 60;
+        let pxPerTime, direction;
+        if (this.orientation == 'vertical') {
+          pxPerTime = Math.round(Math.abs(el.scrollTop - end) / flashTimes);
+          direction = el.scrollTop > end ? 'up' : 'down';
+        } else if (this.orientation == 'horizontal') {
+          pxPerTime = Math.round(Math.abs(el.scrollLeft - end) / flashTimes);
+          direction = el.scrollLeft > end ? 'left' : 'right';
+        }
+        let step = () => {
+          if (this.orientation == 'vertical') {
+            if (direction == 'down') {
+              if (end - el.scrollTop <= 0) {
+                return;
+              }
+              el.scrollTop += pxPerTime;
+            } else {
+              if (end - el.scrollTop >= 0) {
+                return;
+              }
+              el.scrollTop -= pxPerTime;
+            }
+          } else if (this.orientation == 'horizontal') {
+            if (direction == 'left') {
+              if (end - el.scrollLeft >= 0) {
+                return;
+              }
+              el.scrollLeft -= pxPerTime;
+            } else {
+              if (end - el.scrollLeft <= 0) {
+                return;
+              }
+              el.scrollLeft += pxPerTime;
+            }
+          }
+          requestAnimationFrame(step);
+        }
+        step();
       },
-      mounted(){
-        let warp=this.$el.children[0];
-        this.initnScrollbarData(warp);
-        this.flags={
-          isAdding:false,
-          isDeleting:false
+      initnScrollbarData(el) {
+        let nScrollbarWidth = this.orientation == 'horizontal' ? el.clientWidth : el.offsetWidth - el.clientWidth;
+        let nScrollbarHeight = this.orientation == 'horizontal' ? el.offsetHeight - el.clientHeight : el.clientHeight;
+        let thumbWidth = el.clientWidth / el.scrollWidth * el.clientWidth;
+        let thumbHeight = el.clientHeight / el.scrollHeight * el.clientHeight;
+        let visible = el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth ? true : false;
+        this.nScrollbarData = {
+          width: nScrollbarWidth,
+          height: nScrollbarHeight,
+          thumbVisible: false,
+          thumbWidth: thumbWidth,
+          thumbHeight: thumbHeight,
+          thumbMoveX: 0,
+          thumbMoveY: 0,
+          visible: visible,
+          thumbOnMove: false,
+          thumbPivotX: "",
+          thumbPivotY: "",
+        }
+        this.thumbStyle = this.orientation == 'horizontal' ?
+          {
+            width: thumbWidth + 'px',
+            transform: 'translateX(0px)'
+          }
+          : {
+            height: thumbHeight + 'px',
+            transform: 'translateY(0px)'
+          }
+      },
+      updateThumb() {
+        let warp = this.$el.children[0];
+        if (this.orientation == 'vertical') {
+          this.nScrollbarData.thumbMoveY = Math.ceil(warp.scrollTop / warp.scrollHeight * warp.clientHeight)
+          this.nScrollbarData.thumbHeight = Math.ceil(warp.clientHeight / warp.scrollHeight * warp.clientHeight);
+          this.thumbStyle.transform = 'translateY(' + this.nScrollbarData.thumbMoveY + 'px)';
+          this.thumbStyle.height = this.nScrollbarData.thumbHeight + 'px';
+          this.nScrollbarData.visible = warp.scrollHeight > warp.clientHeight ? true : false;
+        } else if (this.orientation == 'horizontal') {
+          this.nScrollbarData.thumbMoveX = Math.ceil(warp.scrollLeft / warp.scrollWidth * warp.clientWidth);
+          this.nScrollbarData.thumbWidth = Math.ceil(warp.clientWidth / warp.scrollWidth * warp.clientWidth);
+          this.thumbStyle.transform = 'translateX(' + this.nScrollbarData.thumbMoveX + 'px)';
+          this.thumbStyle.width = this.nScrollbarData.thumbWidth + 'px';
+          this.nScrollbarData.visible = warp.scrollWidth > warp.clientWidth ? true : false;
         }
       },
-      methods:{
-        handleScroll(){
-            this.updateThumb();
-        },
-        thumbMouseDown(event){
-          this.nScrollbarData.thumbOnMove=true;
-          this.nScrollbarData.thumbPivotX=event.offsetX;
-          this.nScrollbarData.thumbPivotY=event.offsetY;
-        },
-        thumbMouseMove(event){
-          if(this.nScrollbarData.thumbOnMove==true){
-            let warp=this.$el.children[0];
-            if(this.orientation=='vertical'){
-              let offsetY=event.offsetY-this.nScrollbarData.thumbPivotY;
-              warp.scrollTop+=offsetY;
-            }else if(this.orientation=='horizontal'){
-              let offsetX=event.offsetX-this.nScrollbarData.thumbPivotX;
-              warp.scrollLeft+=offsetX;
-            }
-          }
-        },
-        handleTrackClick(event){
-          if(event.target.className!='el-list__scrollbar__thumb'){
-            let warp=this.$el.children[0];
-            if(this.orientation=='vertical'){
-              if(event.offsetY<=this.nScrollbarData.thumbMoveY){
-                let scrollTop=Math.ceil(event.offsetY*warp.scrollHeight/warp.clientHeight);
-                this.smoothScroll(scrollTop,warp,200);
-              }else{
-                let scrollTop=Math.ceil((event.offsetY-this.nScrollbarData.thumbHeight)*warp.scrollHeight/warp.clientHeight);
-                this.smoothScroll(scrollTop,warp,200);
-              }
-            }else if(this.orientation=='horizontal'){
-              if(event.offsetX<=this.nScrollbarData.thumbMoveX){
-                let scrollLeft=Math.ceil(event.offsetX*warp.scrollWidth/warp.clientWidth);
-                this.smoothScroll(scrollLeft,warp,200);
-              }else{
-                let scrollLeft=Math.ceil((event.offsetX-this.nScrollbarData.thumbWidth)*warp.scrollWidth/warp.clientWidth);
-                this.smoothScroll(scrollLeft,warp,200);
-              }
-            }
-          }
-        },
-        //linear,duration为ms
-        smoothScroll(end,el,duration){
-          let flashTimes=duration/1000*60;
-          let pxPerTime,direction;
-          if(this.orientation=='vertical'){
-            pxPerTime=Math.round(Math.abs(el.scrollTop-end)/flashTimes);
-            direction=el.scrollTop>end?'up':'down';
-          }else if(this.orientation=='horizontal'){
-            pxPerTime=Math.round(Math.abs(el.scrollLeft-end)/flashTimes);
-            direction=el.scrollLeft>end?'left':'right';
-          }
-          let step = ()=> {
-            if(this.orientation=='vertical'){
-              if(direction=='down'){
-                if(end-el.scrollTop<=0){
-                  return;
-                }
-                el.scrollTop+=pxPerTime;
-              }else {
-                if(end-el.scrollTop>=0){
-                  return;
-                }
-                el.scrollTop-=pxPerTime;
-              }
-            }else if(this.orientation=='horizontal'){
-              if(direction=='left'){
-                if(end-el.scrollLeft>=0){
-                  return;
-                }
-                el.scrollLeft-=pxPerTime;
-              }else {
-                if(end-el.scrollLeft<=0){
-                  return;
-                }
-                el.scrollLeft+=pxPerTime;
-              }
-            }
-            requestAnimationFrame(step);
-          }
-         step();
-        },
-        initnScrollbarData(el){
-          let nScrollbarWidth=this.orientation=='horizontal'?el.clientWidth:el.offsetWidth-el.clientWidth;
-          let nScrollbarHeight=this.orientation=='horizontal'?el.offsetHeight-el.clientHeight:el.clientHeight;
-          let thumbWidth=el.clientWidth/el.scrollWidth*el.clientWidth;
-          let thumbHeight=el.clientHeight/el.scrollHeight*el.clientHeight;
-          let visible=el.scrollHeight>el.clientHeight||el.scrollWidth>el.clientWidth?true:false;
-          this.nScrollbarData= {
-            width:nScrollbarWidth,
-            height:nScrollbarHeight,
-            thumbVisible:false,
-            thumbWidth:thumbWidth,
-            thumbHeight:thumbHeight,
-            thumbMoveX:0,
-            thumbMoveY:0,
-            visible:visible,
-            thumbOnMove:false,
-            thumbPivotX:"",
-            thumbPivotY:"",
-          }
-          this.thumbStyle=this.orientation=='horizontal'?
-            {width: thumbWidth+'px',
-              transform:'translateX(0px)'}
-            :{height: thumbHeight+'px',
-            transform:'translateY(0px)'}
-        },
-        updateThumb(){
-          let warp=this.$el.children[0];
-          if(this.orientation=='vertical'){
-            this.nScrollbarData.thumbMoveY=Math.ceil(warp.scrollTop/warp.scrollHeight*warp.clientHeight)
-            this.nScrollbarData.thumbHeight=Math.ceil(warp.clientHeight/warp.scrollHeight*warp.clientHeight);
-            this.thumbStyle.transform='translateY('+this.nScrollbarData.thumbMoveY+'px)';
-            this.thumbStyle.height=this.nScrollbarData.thumbHeight+'px';
-            this.nScrollbarData.visible=warp.scrollHeight>warp.clientHeight?true:false;
-          }else if(this.orientation=='horizontal'){
-            this.nScrollbarData.thumbMoveX=Math.ceil(warp.scrollLeft/warp.scrollWidth*warp.clientWidth);
-            this.nScrollbarData.thumbWidth=Math.ceil(warp.clientWidth/warp.scrollWidth*warp.clientWidth);
-            this.thumbStyle.transform='translateX('+ this.nScrollbarData.thumbMoveX+'px)';
-            this.thumbStyle.width=this.nScrollbarData.thumbWidth+'px';
-            this.nScrollbarData.visible=warp.scrollWidth>warp.clientWidth?true:false;
-          }
-        },
-        addItem(index,item){
-          if(this.flags.isAdding||this.flags.isDeleting){
-            return;
-          }else if(!this.flags.isAdding){
-            this.flags.isAdding=true;
-          }
-          this.list.splice(index+1,0,item);
-          this.$nextTick(()=>{
-            let single_keyframe,multi_keyframe;
-            if(this.orientation=='vertical'){
-              single_keyframe=keyframe.slideLeftIn;
-              multi_keyframe=[
-                { transform: 'translateY(-100%)' },
-                { transform: 'translateY(0)' }
-              ]
-            }else if(this.orientation=='horizontal'){
-              single_keyframe=keyframe.slideDownIn;
-              multi_keyframe=[
-                { transform: 'translateX(-100%)' },
-                { transform: 'translateX(0)' }
-              ];
-            }
-            let addedEL=this.$slots.default[index+1].elm;
-            let player=addedEL.animate(single_keyframe, {
-              duration: 1000,
-              easing: 'linear',
-            });
-            player.onfinish=()=>{
-              this.updateThumb();
-              this.flags.isAdding=false;
-            }
-            let downELs=this.$slots.default;
-            downELs.forEach((downEL,mIndex)=>{
-              if(mIndex>=index+2){
-               downEL.elm.animate(multi_keyframe, {
-                  duration: 500,
-                  easing: 'linear',
-                });
-              }
-            });
-          });
-        },
-        delItem(index){
-          if(this.flags.isDeleting||this.flags.isAdding){
-            return;
-          }else if(!this.flags.isDeleting){
-            this.flags.isDeleting=true;
-          }
-          let single_keyframe,multi_keyframe;
-          if(this.orientation=='vertical'){
-            single_keyframe=keyframe.slideLeftOut;
-            multi_keyframe=[
-              { transform: 'translateY(100%)' },
-              { transform: 'translateY(0)' }
+      addItem(index, item) {
+        if (this.flags.isAdding || this.flags.isDeleting) {
+          return;
+        } else if (!this.flags.isAdding) {
+          this.flags.isAdding = true;
+        }
+        this.list.splice(index + 1, 0, item);
+        this.$nextTick(() => {
+          let firstEL = this.$slots.default[0].elm;
+          let o = firstEL.getBoundingClientRect();
+          let invertY = o.top - o.bottom;
+          let single_keyframe, multi_keyframe;
+          if (this.orientation == 'vertical') {
+            single_keyframe = keyframe.slideLeftIn;
+            multi_keyframe = [
+              {transform: 'translateY(' + invertY + 'px)'},
+              {transform: 'translateY(0)'}
             ]
-          }else if(this.orientation=='horizontal'){
-            single_keyframe=keyframe.slideDownOut;
-            multi_keyframe=[
-              { transform: 'translateX(100%)' },
-              { transform: 'translateX(0)' }
+          } else if (this.orientation == 'horizontal') {
+            single_keyframe = keyframe.slideDownIn;
+            multi_keyframe = [
+              {transform: 'translateX(-100%)'},
+              {transform: 'translateX(0)'}
             ];
           }
-          let deleteEL=this.$slots.default[index].elm;
-          let player=deleteEL.animate(single_keyframe, {
-            duration: 500,
-            easing: 'linear',
+          let addedEL = this.$slots.default[index + 1].elm;
+          let player = addedEL.animate(single_keyframe, {
+            duration: 1000,
+            easing: 'cubic-bezier(0,0,0.32,1)',
           });
-          player.onfinish=()=>{
-            let targets=[];
-            this.list.splice(index,1);
-            let els=this.$slots.default;
-            for(let i=index;i<els.length;i++){
-              targets.push(els[i].elm);
-            }
-            let mPlayer="";
-            targets.forEach((el)=>{
-              mPlayer=el.animate(multi_keyframe, {
+          let downELs = this.$slots.default;
+          downELs.forEach((downEL, mIndex) => {
+            if (mIndex >= index + 2) {
+              downEL.elm.animate(multi_keyframe, {
                 duration: 500,
-                easing: 'linear',
+                easing: 'cubic-bezier(0,0,0.32,1)',
               });
-            });
-            mPlayer.onfinish=()=>{
-              this.updateThumb();
-              this.flags.isDeleting=false;
             }
-          };
+          });
+          player.onfinish = () => {
+            this.updateThumb();
+            this.flags.isAdding = false;
+          }
+        });
+      },
+      delItem(index) {
+        if (this.flags.isDeleting || this.flags.isAdding) {
+          return;
+        } else if (!this.flags.isDeleting) {
+          this.flags.isDeleting = true;
         }
+        let single_keyframe, multi_keyframe;
+        let deleteEL = this.$slots.default[index].elm;
+        let o = deleteEL.getBoundingClientRect();
+        let invertY = o.top - o.bottom;
+        if (this.orientation == 'vertical') {
+          single_keyframe = keyframe.slideLeftOut;
+          multi_keyframe = [
+            {transform: 'translateY(' + -invertY + 'px)'},
+            {transform: 'translateY(0)'}
+          ]
+        } else if (this.orientation == 'horizontal') {
+          single_keyframe = keyframe.slideDownOut;
+          multi_keyframe = [
+            {transform: 'translateX(100%)'},
+            {transform: 'translateX(0)'}
+          ];
+        }
+        let player = deleteEL.animate(single_keyframe, {
+          duration: 500,
+          easing: 'linear',
+        });
+        player.onfinish = () => {
+          let targets = [];
+          this.list.splice(index, 1);
+          let els = this.$slots.default;
+          for (let i = index; i < els.length; i++) {
+            targets.push(els[i].elm);
+          }
+          let mPlayer = "";
+          targets.forEach((el) => {
+            mPlayer = el.animate(multi_keyframe, {
+              duration: 500,
+              easing: 'linear',
+            });
+          });
+          mPlayer.onfinish = () => {
+            this.updateThumb();
+            this.flags.isDeleting = false;
+          }
+        };
       }
     }
+  }
 </script>

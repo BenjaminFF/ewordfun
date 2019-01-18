@@ -27,20 +27,21 @@ module.exports = {
     pwHint:['密码长度必须大于6个字符','密码必须包含字母和数字','密码不能为空','密码中不能包含汉字'],
     rCodeHint:['注册码不能为空','注册码不正确']
   },
-  addText:"+添加卡片",
   createDialog:{
     header:"新的单词集!",
-    title:"标题",
-    subTitle:"描述",
-    titleEmpty:'标题不能为空哦',
-    editHeader:'修改单词集！'
+    name:"标题",
+    introduction:"描述",
+    nameEmpty:'标题不能为空哦',
+    editHeader:'修改单词集！',
+    submit:'创建'
   },
   createSet:{
-    termEmpty:'行单词为空，请给它填上!',
-    defEmpty:'行定义为空，请给它填上!',
+    termEmpty:'第%{row}行单词为空，请给它填上!',
+    defEmpty:'第%{row}行定义为空，请给它填上!',
     setLength:'一个单词集至少包含3个卡片哦!',
-    termHint:'定义...',
+    termHint:'单词定义...',
     definitionHint:'解释...',
+    addCard:"+添加卡片",
   },
   deleteDialog:{
     delete:'确定',

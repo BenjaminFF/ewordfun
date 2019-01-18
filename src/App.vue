@@ -11,6 +11,7 @@
     <el-col class="main" :span="20">
       <router-view></router-view>
     </el-col>
+
   </el-row>
 </template>
 
@@ -46,6 +47,7 @@
 
 <style>
   @import "../ef-theme/lib/index.css";
+  @import "../node_modules/animate.css/animate.css";
   body, html {
     width: 100%;
     height: 100%;
