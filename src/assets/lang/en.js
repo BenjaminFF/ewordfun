@@ -5,12 +5,11 @@ module.exports = {
   defaultPage:{
     title:"Create set,Learn set!",
   },
-  sidebar: {latestLearning:'Latest Learning',yourSet:'Your Set'},
+  sidebar: {latestLearn:'Latest Learn',yourSet:'Your Set',helpCenter:'Help Center',setting:'Setting'},
   createFolder:['Create New Folder','title','intro',"CREATE","there's already have such a folder.","folder's title cannot be empty"],
-  header:{
-    create:'CREATE',
-    user:['SIGNUP','LOGIN'],
-    userfunc:['your wordset',"upgrade","logout"]
+  appHeader:{
+    search:'search here......',
+    createSet: 'Create Set'
   },
   LogIn:{
     basic:['username/email','password','LOG IN','forget password?',"captcha"],
@@ -36,7 +35,7 @@ module.exports = {
     folderHint:"only one folder!",
     nameEmpty:'There is no Title!',
     editHeader:'modified Set',
-    submit:'CREATE'
+    submit:'CREATE',
   },
   createSet:{
     termEmpty:'term is empty in the %{row} row,please fill it up!',
@@ -45,6 +44,7 @@ module.exports = {
     termHint:'term...',
     definitionHint:'definition...',
     addCard:"+Add Card",
+    return:"Return"
   },
   deleteDialog:{
     delete:'Delete',

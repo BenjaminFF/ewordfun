@@ -1,5 +1,5 @@
 <template>
-  <div class="l-create-set">
+  <div class="l-create-set animated slideInDown">
     <div class="l-create-set__list-container">
       <ef-list ref="EfList" :list="cards" :wrap-height="'100%'" style="width: 100%;">
         <div class="l-create-set-card" v-for="(card,index) in cards" :key="n">
@@ -34,6 +34,7 @@
         <i class="el-icon-check"></i>
       </span>
     </div>
+    <el-button class="create-set-return" @click="createSetReturn">{{$t('createSet.return')}}</el-button>
     <el-dialog
       :title="$t('createDialog.header')"
       :center="true"
@@ -156,12 +157,17 @@
               set:JSON.stringify(this.set),
               vocabularies:JSON.stringify(cards),
               authorid:'jqhpljsv'
-            }).then((res)=>{});
+            }).then((res)=>{
+              this.$router.go(-1);
+            });
           } else {
             return false;
           }
         });
       },
+      createSetReturn(){
+        this.$router.go(-1);
+      }
     }
   }
 </script>
@@ -183,8 +189,11 @@
     cursor: pointer;
   }
 
-
-
+  .create-set-return{
+    position: absolute;
+    left: 2rem;
+    top: 2rem;
+  }
 </style>
 
 <style>

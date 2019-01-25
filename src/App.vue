@@ -3,15 +3,56 @@
     <el-col class="sidebar" :span="4">
       <div class="sidebar-header"></div>
       <div class="sidebar-menu">
-        <div>{{$t('sidebar.latestLearning')}}</div>
-        <div>{{$t('sidebar.yourSet')}}</div>
+        <el-menu
+          router="true"
+          default-active="2">
+          <el-menu-item index="/latestLearn">
+            <i class="el-icon-menu"></i>
+            <span slot="title">{{$t('sidebar.latestLearn')}}</span>
+          </el-menu-item>
+          <el-menu-item index="/userSet">
+            <i class="el-icon-menu"></i>
+            <span slot="title">{{$t('sidebar.yourSet')}}</span>
+          </el-menu-item>
+          <el-menu-item index="/helpCenter">
+            <i class="el-icon-menu"></i>
+            <span slot="title">{{$t('sidebar.helpCenter')}}</span>
+          </el-menu-item>
+          <el-menu-item index="/setting">
+            <i class="el-icon-menu"></i>
+            <span slot="title">{{$t('sidebar.setting')}}</span>
+          </el-menu-item>
+        </el-menu>
       </div>
       <div class="sidebar-footer"></div>
     </el-col>
     <el-col class="main" :span="20">
-      <router-view></router-view>
+      <el-row class="main-header">
+        <el-col :span="16" class="app-main-header-input">
+          <i class="el-icon-search"></i>
+          <el-input :placeholder="$t('appHeader.search')" style="font-size: 2rem"></el-input>
+        </el-col>
+        <el-col :span="2" style="height: 100%;display: flex;align-items: center;justify-content: center">
+          <el-button @click="openCreateSet">{{$t('appHeader.createSet')}}</el-button>
+        </el-col>
+        <el-col :span="2" style="font-size: 1.5rem;display: flex;justify-content: space-around">
+          <i class="el-icon-message"></i>
+          <i class="el-icon-bell"></i>
+        </el-col>
+        <el-col :span="4">
+          <div class="user-info">
+            <div class="user-info-img"></div>
+            <span class="user-info-name">
+              tony
+              <i class="el-icon-caret-bottom"></i>
+            </span>
+          </div>
+        </el-col>
+      </el-row>
+      <div class="main-content">
+        <router-view></router-view>
+      </div>
     </el-col>
-
   </el-row>
 </template>
 
@@ -41,6 +82,9 @@
         langStorage.setLang(this.$i18n.locale) // 保存用户习惯
         console.log("change locale")
       },
+      openCreateSet(){
+        this.$router.push('/createSet');
+      }
     }
   }
 </script>
@@ -68,19 +112,67 @@
   }
 
   .main {
-    background-color: #17bfc8;
     height: 100%;
+  }
+
+  .main-header{
+    width: 100%;
+    height: 10%;
+    display: flex;
+    align-items: center;
+  }
+
+  .app-main-header-input{
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    align-items: center;
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .app-main-header-input .el-input__inner{
+    border: none !important;
+  }
+
+  .user-info{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+
+  .user-info-img{
+    width: 3rem;
+    height: 3rem;
+    border-radius: 3rem;
+    background-color: #42b983;
+
+  }
+
+  .user-info-name{
+    cursor: pointer;
+    margin-left: 1rem;
+  }
+
+  .main-content{
+    width: 100%;
+    height: 90%;
+    background-color: #42b983;
   }
 
   .sidebar-header {
     width: 100%;
-    height: 20%;
+    height: 10%;
     background-color: #2c3e50;
   }
 
   .sidebar-menu {
     width: 100%;
-    height: 70%;
+    height: 80%;
     background-color: darkcyan;
   }
 
@@ -88,6 +180,11 @@
     width: 100%;
     height: 10%;
     background-color: lightcoral;
+  }
+
+  .el-menu{
+    background-color: transparent;
+    border-right-width: 0px;
   }
 
 </style>
