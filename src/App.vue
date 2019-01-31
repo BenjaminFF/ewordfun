@@ -40,10 +40,10 @@
           <i class="el-icon-bell"></i>
         </el-col>
         <el-col :span="4">
-          <div class="user-info">
+          <div class="user-info" @click="logout">
             <div class="user-info-img"></div>
             <span class="user-info-name">
-              tony
+              {{userInfo!=null?userInfo.name:'???'}}
               <i class="el-icon-caret-bottom"></i>
             </span>
           </div>
@@ -58,11 +58,14 @@
 
 <script>
   import langStorage from './lang'
+
   export default {
     name: 'App',
     data() {
       return {
-        menuItems: []
+        menuItems: [],
+        userValidated: false,
+        userInfo:{}
       }
     },
     created() {
@@ -70,6 +73,7 @@
     },
     methods: {
       init() {
+        this.userInfo=JSON.parse(localStorage.getItem('userInfo'));
         this.fetchData();
       },
       fetchData() {
@@ -82,47 +86,57 @@
         langStorage.setLang(this.$i18n.locale) // 保存用户习惯
         console.log("change locale")
       },
-      openCreateSet(){
+      openCreateSet() {
         this.$router.push('/createSet');
+      },
+      logout(){
+        this.axios.post('/api/user/logout').then((res)=>{
+          console.log(res.data);
+          localStorage.removeItem('userInfo');
+          this.$router.push('/login');
+        })
       }
-    }
+    },
+    watch: {
+      // 如果路由有变化，会再次执行该方法
+      '$route'(to,from){
+        if(from.path=='/login'){
+          this.init();
+        }
+      }
+    },
   }
 </script>
 
 <style>
   @import "../ef-theme/lib/index.css";
   @import "../node_modules/animate.css/animate.css";
-  body, html {
-    width: 100%;
-    height: 100%;
-  }
-
-  body, html, div {
-    padding: 0;
-    margin: 0;
-  }
 
   #app {
     width: 100%;
     height: 100%;
+    background-color: rgba(225, 235, 243, 0.3);
   }
 
   .sidebar {
     height: 100%;
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.11);
   }
 
   .main {
     height: 100%;
   }
 
-  .main-header{
+  .main-header {
     width: 100%;
     height: 10%;
     display: flex;
     align-items: center;
+    background-color: white;
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.11);
   }
 
-  .app-main-header-input{
+  .app-main-header-input {
     font-size: 2rem;
     display: flex;
     justify-content: center;
@@ -132,11 +146,11 @@
     box-sizing: border-box;
   }
 
-  .app-main-header-input .el-input__inner{
+  .app-main-header-input .el-input__inner {
     border: none !important;
   }
 
-  .user-info{
+  .user-info {
     width: 100%;
     height: 100%;
     display: flex;
@@ -145,7 +159,7 @@
     user-select: none;
   }
 
-  .user-info-img{
+  .user-info-img {
     width: 3rem;
     height: 3rem;
     border-radius: 3rem;
@@ -153,15 +167,14 @@
 
   }
 
-  .user-info-name{
+  .user-info-name {
     cursor: pointer;
     margin-left: 1rem;
   }
 
-  .main-content{
+  .main-content {
     width: 100%;
     height: 90%;
-    background-color: #42b983;
   }
 
   .sidebar-header {
@@ -182,7 +195,7 @@
     background-color: lightcoral;
   }
 
-  .el-menu{
+  .el-menu {
     background-color: transparent;
     border-right-width: 0px;
   }

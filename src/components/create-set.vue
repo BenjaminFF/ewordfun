@@ -156,7 +156,6 @@
             this.axios.post('/api/set/create',{
               set:JSON.stringify(this.set),
               vocabularies:JSON.stringify(cards),
-              authorid:'jqhpljsv'
             }).then((res)=>{
               this.$router.go(-1);
             });

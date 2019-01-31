@@ -1,19 +1,55 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!-- 引入样式 -->
-    <link rel="stylesheet" href="https://cdn.bootcss.com/element-ui/2.4.1/theme-chalk/index.css">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="https://cdn.bootcss.com/element-ui/2.4.1/theme-chalk/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+  <style>
+    body, html {
+      width: 100%;
+      height: 100%;
+    }
 
-    <title>ewordfun</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-    <!-- 引入组件库 -->
-    <script src="https://cdn.bootcss.com/vue/2.5.2/vue.min.js"></script>
-    <script src="https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js"></script>
-    <script src="https://cdn.bootcss.com/element-ui/2.4.1/index.js"></script>
-  </body>
+    body, html, div {
+      padding: 0;
+      margin: 0;
+    }
+
+    .splash {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      background-color: white;
+      z-index: 100000;
+    }
+  </style>
+  <title>ewordfun</title>
+</head>
+<body>
+<div id="app"></div>
+<div class="splash">
+</div>
+<!-- built files will be auto injected -->
+<!-- 引入组件库 -->
+<script src="https://cdn.bootcss.com/vue/2.5.2/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js"></script>
+<script src="https://cdn.bootcss.com/element-ui/2.4.1/index.js"></script>
+<script>
+  console.log('loading');
+  window.onload = function () {
+    console.log('loaded');
+    setTimeout(function () {
+      let elSplash = document.getElementsByClassName('splash')[0];
+      elSplash.classList.add('animated', 'fadeOut');
+      elSplash.addEventListener('animationend', function () {
+        elSplash.parentNode.removeChild(elSplash);
+      });
+    }, 100);
+  };
+</script>
+</body>
 </html>

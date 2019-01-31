@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import axios from 'axios'
+import loginPage from '@/components/login-page'
 import createSet from '@/components/create-set'
 import latestLearn from '@/components/latestlearn/latest-learn'
 import userSet from '@/components/userset/user-set'
@@ -8,12 +10,17 @@ import setting from '@/components/setting/setting'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
       name: 'index',
       component: latestLearn
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: loginPage
     },
     {
       path: '/latestLearn',
@@ -41,4 +48,20 @@ export default new Router({
       component: createSet
     }
   ]
-})
+});
+
+router.beforeEach((to, from, next) => {
+  let userInfo=localStorage.getItem('userInfo');
+  if(userInfo!=null){
+    if(Date.now()-JSON.parse(userInfo).loginTime<=24*3600*1000*15){
+      next({path:to.path=='/login'?'/latestLearn':null});
+    }else {
+      localStorage.removeItem('userInfo');
+      next({path:to.path=='/login'?null:'/login'});
+    }
+  }else {
+    next({path:to.path=='/login'?null:'/login'});
+  }
+});
+
+export default router;
