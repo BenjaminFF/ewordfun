@@ -68,9 +68,11 @@
       },
       async fetchData(){
         await this.axios.get('/api/set/list_of_author').then((res)=>{
+          console.log(res.data);
           this.sets=res.data;
         });
         await this.axios.get('/api/folder/list').then((res)=>{
+          console.log(res.data);
           res.data.forEach((folder)=>{
             this.folders.push({
               label:folder.name,

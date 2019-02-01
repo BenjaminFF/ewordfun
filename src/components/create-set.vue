@@ -1,61 +1,63 @@
 <template>
-  <div class="l-create-set animated slideInDown">
-    <div class="l-create-set__list-container">
-      <ef-list ref="EfList" :list="cards" :wrap-height="'100%'" style="width: 100%;">
-        <div class="l-create-set-card" v-for="(card,index) in cards" :key="n">
-          <el-row class="l-create-set-card__main" @mouseenter.native="card.hovered=true" ref="cards"
-                  @mouseleave.native="card.hovered=false">
-            <el-col class="id" :span="1" style="text-align: center;color: black">{{index+1}}</el-col>
-            <el-col class="term" :span="11">
-              <el-input type="textarea" autosize resize="none" style="margin-rigt: 5%" v-model="card.term" ref="termInput"></el-input>
-            </el-col>
-            <el-col class="definition" :span="11">
-              <el-input type="textarea" autosize resize="none" style="margin-left: 5%"
-                        v-model="card.definition" ref="defInput"></el-input>
-            </el-col>
-            <el-col class="delete" :span="1" style="text-align: center;cursor: pointer;font-size: 1.2rem">
-              <i class="el-icon-delete" style="color: black" @click="delCard(index)" v-if="card.hovered"></i>
-            </el-col>
-            <div class="l-create-set-card__bottom-add" v-if="index==cards.length-1" @click="addCard(index-1)">
-              {{$t('createSet.addCard')}}
-            </div>
-          </el-row>
-          <div style="width: 70%;text-align: center;height: 3rem" @mouseenter="card.addVisible=true"
-               @mouseleave="card.addVisible=false">
+  <transition enter-active-class="animated slideInDown" leave-active-class="animated slideOutUp">
+    <div class="l-create-set">
+      <div class="l-create-set__list-container">
+        <ef-list ref="EfList" :list="cards" :wrap-height="'100%'" style="width: 100%;">
+          <div class="l-create-set-card" v-for="(card,index) in cards" :key="n">
+            <el-row class="l-create-set-card__main" @mouseenter.native="card.hovered=true" ref="cards"
+                    @mouseleave.native="card.hovered=false">
+              <el-col class="id" :span="1" style="text-align: center;color: black">{{index+1}}</el-col>
+              <el-col class="term" :span="11">
+                <el-input type="textarea" autosize resize="none" style="margin-rigt: 5%" v-model="card.term" ref="termInput"></el-input>
+              </el-col>
+              <el-col class="definition" :span="11">
+                <el-input type="textarea" autosize resize="none" style="margin-left: 5%"
+                          v-model="card.definition" ref="defInput"></el-input>
+              </el-col>
+              <el-col class="delete" :span="1" style="text-align: center;cursor: pointer;font-size: 1.2rem">
+                <i class="el-icon-delete" style="color: black" @click="delCard(index)" v-if="card.hovered"></i>
+              </el-col>
+              <div class="l-create-set-card__bottom-add" v-if="index==cards.length-1" @click="addCard(index-1)">
+                {{$t('createSet.addCard')}}
+              </div>
+            </el-row>
+            <div style="width: 70%;text-align: center;height: 3rem" @mouseenter="card.addVisible=true"
+                 @mouseleave="card.addVisible=false">
             <span class="l-create-set-card__add-button animated bounceIn" @click="addCard(index)"
                   v-if="card.addVisible&&index<cards.length-2">
               <i class="el-icon-plus"></i>
             </span>
+            </div>
           </div>
-        </div>
-      </ef-list>
-      <span class="confirm-fab" @mouseover="confirmHovered=true" @mouseleave="confirmHovered=false"
-            :class="[{'animated tada':confirmHovered}]" @click="openDialog">
+        </ef-list>
+        <span class="confirm-fab" @mouseover="confirmHovered=true" @mouseleave="confirmHovered=false"
+              :class="[{'animated tada':confirmHovered}]" @click="openDialog">
         <i class="el-icon-check"></i>
       </span>
+      </div>
+      <el-button class="create-set-return" @click="createSetReturn">{{$t('createSet.return')}}</el-button>
+      <el-dialog
+        :title="$t('createDialog.header')"
+        :center="true"
+        :visible.sync="dialogVisible"
+        :modal-append-to-body="false"
+        :custom-class="'createSetDialog'"
+        width="20%">
+        <el-form :rules="rules" :model="set" ref="createSetForm">
+          <el-form-item prop="name">
+            <el-input :placeholder="$t('createDialog.name')" style="font-size: 1.5rem" v-model="set.name"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-input type="textarea" min-row resize="none" :autosize="{ minRows: 4, maxRows: 6 }" :placeholder="$t('createDialog.introduction')"
+                      style="font-size: 1.2rem;margin-top: 2rem" v-model="set.intro"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button style="width: 100%;margin-top: 4rem;" type="primary" @click="submitForm('createSetForm')">{{$t('createDialog.submit')}}</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
     </div>
-    <el-button class="create-set-return" @click="createSetReturn">{{$t('createSet.return')}}</el-button>
-    <el-dialog
-      :title="$t('createDialog.header')"
-      :center="true"
-      :visible.sync="dialogVisible"
-      :modal-append-to-body="false"
-      :custom-class="'createSetDialog'"
-      width="20%">
-      <el-form :rules="rules" :model="set" ref="createSetForm">
-        <el-form-item prop="name">
-          <el-input :placeholder="$t('createDialog.name')" style="font-size: 1.5rem" v-model="set.name"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-input type="textarea" min-row resize="none" :autosize="{ minRows: 4, maxRows: 6 }" :placeholder="$t('createDialog.introduction')"
-                    style="font-size: 1.2rem;margin-top: 2rem" v-model="set.intro"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button style="width: 100%;margin-top: 4rem;" type="primary" @click="submitForm('createSetForm')">{{$t('createDialog.submit')}}</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-  </div>
+  </transition>
 </template>
 
 <script>
