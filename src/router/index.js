@@ -1,12 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import axios from 'axios'
 import loginPage from '@/components/login-page'
 import createSet from '@/components/create-set'
 import latestLearn from '@/components/latestlearn/latest-learn'
 import userSet from '@/components/userset/user-set'
 import helpCenter from '@/components/helpcenter/help-center'
 import setting from '@/components/setting/setting'
+import setLearn from '@/components/setlearn/set-learn'
 
 Vue.use(Router)
 
@@ -45,6 +45,11 @@ const router = new Router({
     {
       path: '/createSet',
       name: 'createSet',
+      component: createSet
+    },
+    {
+      path: '/setlearn/:id',
+      name: 'setLearn',
       component: createSet
     }
   ]

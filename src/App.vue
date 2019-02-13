@@ -1,13 +1,13 @@
 <template>
   <el-row id="app">
-    <el-col class="sidebar" :span="4">
+    <el-col class="sidebar" :span="3">
       <div class="sidebar-header">
       </div>
       <div class="sidebar-menu">
         <el-menu
           background-color="transparent"
           router="true"
-          default-active="2">
+          :default-active="defaultActive">
           <el-menu-item index="/latestLearn">
             <i class="el-icon-menu"></i>
             <span slot="title">{{$t('sidebar.latestLearn')}}</span>
@@ -28,7 +28,7 @@
       </div>
       <div class="sidebar-footer"></div>
     </el-col>
-    <el-col class="main" :span="20">
+    <el-col class="main" :span="21">
       <el-row class="main-header">
         <el-col :span="15" class="app-main-header-input">
           <i class="el-icon-search"></i>
@@ -49,17 +49,14 @@
           </div>
           <div style="width: 3rem;height: 3rem;border-radius: 4rem;background-color: #42b983;margin-left: 2rem">
           </div>
-          <el-dropdown style="margin-left: 2rem;cursor: pointer;user-select: none;outline: none" trigger="click">
+          <el-dropdown style="margin-left: 2rem;cursor: pointer;user-select: none;outline: none" trigger="click" @command="handleUserDropdown">
             <span style="font-size: 1.2rem">
               {{userInfo!=null?userInfo.name:'????/'}}
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>黄金糕</el-dropdown-item>
-              <el-dropdown-item>狮子头</el-dropdown-item>
-              <el-dropdown-item>螺蛳粉</el-dropdown-item>
-              <el-dropdown-item>双皮奶</el-dropdown-item>
-              <el-dropdown-item>蚵仔煎</el-dropdown-item>
+              <el-dropdown-item command="modifyInfo">修改信息</el-dropdown-item>
+              <el-dropdown-item command="logout">退出</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-col>
@@ -73,14 +70,14 @@
 
 <script>
   import langStorage from './lang'
-
   export default {
     name: 'App',
     data() {
       return {
         menuItems: [],
         userValidated: false,
-        userInfo: {}
+        userInfo: {},
+        defaultActive:''
       }
     },
     created() {
@@ -89,6 +86,7 @@
     methods: {
       init() {
         this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        this.defaultActive=this.$route.path;
         this.fetchData();
       },
       fetchData() {
@@ -104,6 +102,12 @@
       openCreateSet() {
         this.$router.push('/createSet');
       },
+      handleUserDropdown(command){
+        if(command=='logout'){
+          this.logout();
+          return;
+        }
+      },
       logout() {
         this.axios.post('/api/user/logout').then((res) => {
           console.log(res.data);
@@ -117,6 +121,7 @@
       '$route'(to, from) {
         if (from.path == '/login') {
           this.init();
+          this.defaultActive=this.$route.path;
         }
       }
     },

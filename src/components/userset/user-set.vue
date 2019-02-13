@@ -3,7 +3,7 @@
     <el-row class="control-bar">
       <el-col :span="12" style="display: flex;align-items: center">
         <div style="margin-right: 1rem">Sort By</div>
-        <el-select v-model="curSortOption" placeholder="请选择">
+        <el-select v-model="curSortOption" placeholder="请选择" @change="onSortChange()" clearable>
           <el-option
             v-for="item in sortOptions"
             :key="item.value"
@@ -13,8 +13,9 @@
         </el-select>
         <i class="el-icon-star-off" style="font-size: 1.5rem;margin-left: 1rem"></i>
       </el-col>
-      <el-col :span="12" style="display: flex;justify-content: flex-end">
-        <el-select v-model="curFolder">
+      <el-col :span="12" style="display: flex;justify-content: flex-end;align-items: center">
+        <div style="margin-right: 1rem">Folder</div>
+        <el-select v-model="curFolderId" clearable @change="onFolderChange()">
           <el-option
             v-for="item in folders"
             :key="item.value"
@@ -25,18 +26,23 @@
       </el-col>
     </el-row>
     <el-scrollbar class="list user-set-scrollbar">
-      <el-row class="list-item" v-for="set in sets">
-        <el-col :span="2" style="display: flex;justify-content: center;align-items: center">
-          <div class="degree"></div>
-        </el-col>
-        <el-col :span="20" style="height: 100%">
-          <div class="name">{{set.name}}</div>
-          <div class="intro">{{set.intro}}</div>
-        </el-col>
-        <el-col :span="2" style="display: flex;justify-content: center;font-size: 1.5rem">
-          <i class="el-icon-star-off" style="margin-right: 1rem"></i>
-          <i class="el-icon-more"></i>
-        </el-col>
+      <el-row v-for="set in curSets" @click.native="openItem(set.id)">
+        <div style="width: 100%;height: fit-content">
+          <div style="margin-bottom: 2rem;font-size: 1.5rem" v-if="set.isDateVisible">{{dateFormat(set.createtime)}}</div>
+          <div class="list-item">
+            <el-col :span="2" style="display: flex;justify-content: center;align-items: center">
+              <div class="degree"></div>
+            </el-col>
+            <el-col :span="20" style="height: 100%">
+              <div class="name">{{set.name}}</div>
+              <div class="intro">{{set.intro}}</div>
+            </el-col>
+            <el-col :span="2" style="display: flex;justify-content: center;font-size: 1.5rem">
+              <i class="el-icon-star-off" style="margin-right: 1rem"></i>
+              <i class="el-icon-more"></i>
+            </el-col>
+          </div>
+        </div>
       </el-row>
     </el-scrollbar>
   </div>
@@ -45,41 +51,92 @@
 <script>
   export default {
     name: "user-set",
-    data(){
-      return{
-        sets:[],
-        sortOptions:[],
-        curSortOption:"",
-        folders:[],
-        curFolder:""
+    data() {
+      return {
+        sets: [],
+        sortOptions: [],
+        curSortOption: "",
+        folders: [],
+        curFolderId: "",
+        curSets: []
       }
     },
     created() {
       this.init();
     },
-    methods:{
-      init(){
+    methods: {
+      init() {
         this.fetchData();
-        this.sortOptions=[
-          {value:'time',label:'time'},
-          {value:'proficiency',label:'proficiency'},
-          {value:'termCount',label:'termCount'}
+        this.sortOptions = [
+          {value: 'createTime', label: 'createTime'},
+          {value: 'proficiency', label: 'proficiency'},
+          {value: 'latestLearn', label: 'latestLearn'},
         ]
       },
-      async fetchData(){
-        await this.axios.get('/api/set/list_of_author').then((res)=>{
-          console.log(res.data);
-          this.sets=res.data;
+      async fetchData() {
+        await this.axios.get('/api/set/list_of_user').then((res) => {
+          res.data.forEach((set)=>{
+            set.isDateVisible=false;
+          })
+          this.sets = this.curSets = res.data;
+          this.sets[2].isDateVisible=true;
         });
-        await this.axios.get('/api/folder/list').then((res)=>{
-          console.log(res.data);
-          res.data.forEach((folder)=>{
+        await this.axios.get('/api/folder/list').then((res) => {
+          res.data.forEach((folder) => {
             this.folders.push({
-              label:folder.name,
-              value:folder.fid
+              label: folder.name,
+              value: folder.fid
             })
           });
         });
+      },
+      onFolderChange() {
+        if (typeof this.curFolderId == "number") {
+          this.axios.get('/api/folder/listSet', {
+            params: {
+              fid: this.curFolderId
+            }
+          }).then((res) => {
+            let sids = res.data;
+            this.filterSet(sids);
+          });
+        } else {
+          this.curSets=this.sets;
+        }
+      },
+      filterSet(sids) {
+        this.curSets=[];
+        this.sets.forEach((set)=>{
+          sids.forEach((sid)=>{
+            if(set.sid==sid){
+              this.curSets.push(set);
+            }
+          })
+        })
+      },
+      onSortChange(){
+        if(this.curSortOption=='proficiency'){
+          this.curSets.sort((set2,set1)=>{
+            return set1.rmatrix+set1.rwrite-(set2.rmatrix+set2.rwrite);
+          })
+        }else if(this.curSortOption=='createTime'){
+          this.curSets.sort((set2,set1)=>{
+            return set1.createtime-set2.createtime;
+          })
+        }else {
+          this.curSets.sort((set2,set1)=>{
+            return set1.createtime-set2.createtime;
+          })
+        }
+      },
+      openItem(){
+        window.open(window.location.origin + '/');
+        console.log('gg');
+      },
+      dateFormat(timeStamp){
+        console.log(timeStamp);
+        let date=new Date(timeStamp);
+        return date.getFullYear()+'年'+(1+date.getUTCMonth())+'月'+date.getDate()+'日';
       }
     }
   }
@@ -104,34 +161,36 @@
     height: 75%;
   }
 
-  .list-item{
+  .list-item {
     width: 100%;
     height: 6rem;
     margin-bottom: 2rem;
     background-color: white;
     display: flex;
     align-items: center;
+    cursor: pointer;
   }
 
-  .degree{
+  .degree {
     width: 4.5rem;
     height: 4.5rem;
     background-color: #42b983;
     border-radius: 4.5rem;
   }
 
-  .name{
+  .name {
     margin-top: 1rem;
     font-size: 1.8rem;
   }
-  .intro{
+
+  .intro {
     font-size: 1rem;
     margin-top: 0.5rem;
   }
 </style>
 
 <style>
-  .user-set-scrollbar .el-scrollbar__wrap{
+  .user-set-scrollbar .el-scrollbar__wrap {
     overflow-x: hidden;
     padding-bottom: 10rem;
     padding-left: 5%;
