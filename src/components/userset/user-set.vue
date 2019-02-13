@@ -3,7 +3,7 @@
     <el-row class="control-bar">
       <el-col :span="12" style="display: flex;align-items: center">
         <div style="margin-right: 1rem">Sort By</div>
-        <el-select v-model="curSortOption" placeholder="请选择" @change="onSortChange()" clearable>
+        <el-select v-model="curSortOption" placeholder="请选择" @change="onSortChange()">
           <el-option
             v-for="item in sortOptions"
             :key="item.value"
@@ -28,7 +28,9 @@
     <el-scrollbar class="list user-set-scrollbar">
       <el-row v-for="set in curSets" @click.native="openItem(set.id)">
         <div style="width: 100%;height: fit-content">
-          <div style="margin-bottom: 2rem;font-size: 1.5rem" v-if="set.isDateVisible">{{dateFormat(set.createtime)}}</div>
+          <div style="margin-bottom: 2rem;font-size: 1.5rem" v-if="set.isDateVisible">
+            {{curSortOption=='createtime'?dateFormat(set.createtime):dateFormat(set.latest_learntime)}}
+          </div>
           <div class="list-item">
             <el-col :span="2" style="display: flex;justify-content: center;align-items: center">
               <div class="degree"></div>
@@ -75,12 +77,16 @@
       },
       async fetchData() {
         await this.axios.get('/api/set/list_of_user').then((res) => {
-          res.data.forEach((set)=>{
-            set.isDateVisible=false;
+          res.data.forEach((set) => {
+            set.isDateVisible = false;
           })
           this.sets = this.curSets = res.data;
-          this.sets[2].isDateVisible=true;
         });
+        this.curSortOption = 'latestLearn';
+        this.curSets.sort((set2, set1) => {
+          return set1.latest_learntime - set2.latest_learntime;
+        });
+        this.groupDate(this.curSets, 'latest_learntime');
         await this.axios.get('/api/folder/list').then((res) => {
           res.data.forEach((folder) => {
             this.folders.push({
@@ -99,44 +105,68 @@
           }).then((res) => {
             let sids = res.data;
             this.filterSet(sids);
+            if(this.curSets.length!=0){
+              this.onSortChange();
+            }
           });
         } else {
-          this.curSets=this.sets;
+          this.curSets = this.sets;
+          if(this.curSets.length!=0){
+            this.onSortChange();
+          }
         }
       },
       filterSet(sids) {
-        this.curSets=[];
-        this.sets.forEach((set)=>{
-          sids.forEach((sid)=>{
-            if(set.sid==sid){
+        this.curSets = [];
+        this.sets.forEach((set) => {
+          sids.forEach((sid) => {
+            if (set.sid == sid) {
               this.curSets.push(set);
             }
           })
         })
       },
-      onSortChange(){
-        if(this.curSortOption=='proficiency'){
-          this.curSets.sort((set2,set1)=>{
-            return set1.rmatrix+set1.rwrite-(set2.rmatrix+set2.rwrite);
+      onSortChange() {
+        this.curSets.forEach((set) => {
+          set.isDateVisible = false;
+        });
+        if (this.curSortOption == 'proficiency') {
+          this.curSets.sort((set2, set1) => {
+            return set1.rmatrix + set1.rwrite - (set2.rmatrix + set2.rwrite);
           })
-        }else if(this.curSortOption=='createTime'){
-          this.curSets.sort((set2,set1)=>{
-            return set1.createtime-set2.createtime;
-          })
-        }else {
-          this.curSets.sort((set2,set1)=>{
-            return set1.createtime-set2.createtime;
-          })
+        } else if (this.curSortOption == 'createTime') {
+          this.curSets.sort((set2, set1) => {
+            return set1.createtime - set2.createtime;
+          });
+          this.groupDate(this.curSets, 'createtime');
+        } else if (this.curSortOption == 'latestLearn') {
+          this.curSets.sort((set2, set1) => {
+            return set1.latest_learntime - set2.latest_learntime;
+          });
+          this.groupDate(this.curSets, 'latest_learntime');
+        }
+        console.log(this.curSortOption);
+      },
+      groupDate(sets, property) {
+        let curDate = new Date(sets[0][property]);
+        sets[0].isDateVisible = true;
+        for (let set of sets) {
+          let mDate = new Date(set[property]);
+          if (mDate.getFullYear() == curDate.getFullYear() && mDate.getMonth() == curDate.getMonth() && mDate.getDate() == curDate.getDate()) {
+            continue;
+          } else {
+            set.isDateVisible=true;
+            curDate=mDate;
+          }
         }
       },
-      openItem(){
+      openItem() {
         window.open(window.location.origin + '/');
         console.log('gg');
       },
-      dateFormat(timeStamp){
-        console.log(timeStamp);
-        let date=new Date(timeStamp);
-        return date.getFullYear()+'年'+(1+date.getUTCMonth())+'月'+date.getDate()+'日';
+      dateFormat(timeStamp) {
+        let date = new Date(timeStamp);
+        return date.getFullYear() + '年' + (1 + date.getMonth()) + '月' + date.getDate() + '日';
       }
     }
   }

@@ -86,7 +86,7 @@
     methods: {
       init() {
         this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
-        this.defaultActive=this.$route.path;
+        this.defaultActive=this.$route.path=='/'?'/latestLearn':this.$route.path;
         this.fetchData();
       },
       fetchData() {
@@ -110,7 +110,6 @@
       },
       logout() {
         this.axios.post('/api/user/logout').then((res) => {
-          console.log(res.data);
           localStorage.removeItem('userInfo');
           this.$router.push('/login');
         })
