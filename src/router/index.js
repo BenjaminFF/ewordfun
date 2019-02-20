@@ -48,9 +48,9 @@ const router = new Router({
       component: createSet
     },
     {
-      path: '/setlearn/:id',
+      path: '/setLearn/:uid/:sid',
       name: 'setLearn',
-      component: createSet
+      component: setLearn
     }
   ]
 });

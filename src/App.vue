@@ -97,7 +97,6 @@
         locale === 'zh' ? this.$i18n.locale = 'en' : this.$i18n.locale = 'zh'
         // LangStorage.setLang(this.$i18n.locale) //后面会用做切换和将用户习惯存储到本地浏览器
         langStorage.setLang(this.$i18n.locale) // 保存用户习惯
-        console.log("change locale")
       },
       openCreateSet() {
         this.$router.push('/createSet');

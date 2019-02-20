@@ -26,7 +26,7 @@
       </el-col>
     </el-row>
     <el-scrollbar class="list user-set-scrollbar">
-      <el-row v-for="set in curSets" @click.native="openItem(set.id)">
+      <el-row v-for="set in curSets" @click.native="openItem(set)">
         <div style="width: 100%;height: fit-content">
           <div style="margin-bottom: 2rem;font-size: 1.5rem" v-if="set.isDateVisible">
             {{curSortOption=='createtime'?dateFormat(set.createtime):dateFormat(set.latest_learntime)}}
@@ -81,6 +81,7 @@
             set.isDateVisible = false;
           })
           this.sets = this.curSets = res.data;
+          console.log(res.data);
         });
         this.curSortOption = 'latestLearn';
         this.curSets.sort((set2, set1) => {
@@ -160,8 +161,8 @@
           }
         }
       },
-      openItem() {
-        window.open(window.location.origin + '/');
+      openItem(set) {
+        window.open(window.location.origin + '/#/setLearn/'+set.uid+'/'+set.sid);
         console.log('gg');
       },
       dateFormat(timeStamp) {
