@@ -180,9 +180,9 @@
   }
 
   .control-bar {
-    width: 90%;
+    width: 70%;
     height: 20%;
-    margin-left: 5%;
+    margin-left: 15%;
     display: flex;
     align-items: center;
   }
@@ -224,7 +224,7 @@
   .user-set-scrollbar .el-scrollbar__wrap {
     overflow-x: hidden;
     padding-bottom: 10rem;
-    padding-left: 5%;
-    padding-right: 5%;
+    padding-left: 15%;
+    padding-right: 15%;
   }
 </style>

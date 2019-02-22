@@ -1,71 +1,18 @@
 <template>
-  <el-row id="app">
-    <el-col class="sidebar" :span="3">
-      <div class="sidebar-header">
-      </div>
-      <div class="sidebar-menu">
-        <el-menu
-          background-color="transparent"
-          router="true"
-          :default-active="defaultActive">
-          <el-menu-item index="/latestLearn">
-            <i class="el-icon-menu"></i>
-            <span slot="title">{{$t('sidebar.latestLearn')}}</span>
-          </el-menu-item>
-          <el-menu-item index="/userSet">
-            <i class="el-icon-menu"></i>
-            <span slot="title">{{$t('sidebar.yourSet')}}</span>
-          </el-menu-item>
-          <el-menu-item index="/helpCenter">
-            <i class="el-icon-menu"></i>
-            <span slot="title">{{$t('sidebar.helpCenter')}}</span>
-          </el-menu-item>
-          <el-menu-item index="/setting">
-            <i class="el-icon-menu"></i>
-            <span slot="title">{{$t('sidebar.setting')}}</span>
-          </el-menu-item>
-        </el-menu>
-      </div>
-      <div class="sidebar-footer"></div>
-    </el-col>
-    <el-col class="main" :span="21">
+  <div id="app">
+    <div class="mSidebar" :style="{transform:'translateX('+offsetX+'rem)'}">dfasdf</div>
+    <div class="container" :style="{transform:'translateX('+offsetX+'rem)'}">
       <el-row class="main-header">
-        <el-col :span="15" class="app-main-header-input">
-          <i class="el-icon-search"></i>
-          <el-input :placeholder="$t('appHeader.search')" style="font-size: 2rem"></el-input>
-        </el-col>
-        <el-col :span="9" style="display: flex;align-items: center">
-          <div @click="openCreateSet" style="background-color: #42b983;text-align: center;
-          padding: 0.8rem 1.2rem;border-radius: 5px;box-shadow: 0px 0px 30px 0px rgba(66,185,131,0.21);color: white;cursor: pointer;user-select: none;min-width: 5rem;width: 5rem">
-            {{$t('appHeader.createSet')}}
-          </div>
-          <div style="width: 6rem;height: 3rem;text-align: center;line-height: 3rem;border-left: 1px solid #dadada;margin-left: 2rem;border-right: 1px solid #dadada">
-            <i class="el-icon-search" style="font-size: 1.5rem"></i>
-          </div>
-          <div style="width: 6rem;height: 3rem;text-align: center;line-height: 3rem;border-right: 1px solid #dadada">
-            <el-badge :value="12">
-              <i class="el-icon-search" style="font-size: 1.5rem"></i>
-            </el-badge>
-          </div>
-          <div style="width: 3rem;height: 3rem;border-radius: 4rem;background-color: #42b983;margin-left: 2rem">
-          </div>
-          <el-dropdown style="margin-left: 2rem;cursor: pointer;user-select: none;outline: none" trigger="click" @command="handleUserDropdown">
-            <span style="font-size: 1.2rem">
-              {{userInfo!=null?userInfo.name:'????/'}}
-              <i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="modifyInfo">修改信息</el-dropdown-item>
-              <el-dropdown-item command="logout">退出</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+        <el-col :span="2" @click.native="showMenu" style="cursor: pointer">
+          <i class="el-icon-menu" style="margin-left: 1rem" ></i>
+          menu
         </el-col>
       </el-row>
       <div class="main-content">
         <router-view></router-view>
       </div>
-    </el-col>
-  </el-row>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -77,7 +24,9 @@
         menuItems: [],
         userValidated: false,
         userInfo: {},
-        defaultActive:''
+        defaultActive:'',
+        offsetX:0,
+        offsetX2:-20
       }
     },
     created() {
@@ -88,6 +37,15 @@
         this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
         this.defaultActive=this.$route.path=='/'?'/latestLearn':this.$route.path;
         this.fetchData();
+      },
+      showMenu(){
+        if(this.offsetX==0){
+          this.offsetX=20;
+          this.offsetX2=20;
+        }else {
+          this.offsetX=0;
+          this.offsetX2=0;
+        }
       },
       fetchData() {
 
@@ -133,16 +91,34 @@
   #app {
     width: 100%;
     height: 100%;
-    background-color: rgba(225, 235, 243, 0.3);
+    background-color: rgba(211, 221, 229, 0.3);
+    position: fixed;
+    left: 0;
+    top: 0;
   }
 
-  .main {
+  .container{
+    width: 100%;
     height: 100%;
+    overflow: hidden;
+    transition: all .6s ease-in-out;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .mSidebar{
+    width: 20rem;
+    height: 100%;
+    background-color: black;
+    position: absolute;
+    left: -20rem;
+    top: 0;
+    transition: all .6s ease-in-out;
   }
 
   .main-header {
     width: 100%;
-    height: 10%;
+    height: 5rem;
     display: flex;
     align-items: center;
     background-color: white;
