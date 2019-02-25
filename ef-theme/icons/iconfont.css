@@ -1,0 +1,29 @@
+@font-face {font-family: "ewordfun";
+  src: url('iconfont.eot?t=1551094238288'); /* IE9 */
+  src: url('iconfont.eot?t=1551094238288#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('data:application/x-font-woff2;charset=utf-8;base64,d09GMgABAAAAAAPwAAsAAAAACAgAAAOhAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHEIGVgCDFAqDVIMmATYCJAMQCwoABCAFhG0HPhsGB8gOJYmQwMAAAABgBNXavz17e/AZFaIFDigCFVZf+IAHFCbKUPnoCMVGvP/TqV8UAFRKUwhQKpDhZLP8Tme7ZaVsay0RzwxjtiJfnKqZ57Hk/K0AMObGPSxXilC1WqCxN1FBsA7EW5e5mUC7admok9buYQiSGb0CcW4x6SAoZZJrckMjVCUTM8Rb4DTJR98C3vi/j/+wFUEgKQswBl552mKE+l8Tx0oY9b8K010ExOM5wE2jwAqQifulrnuYMLyC0a60Zq0BlSyksQL//+NjxSJVU61UmfDnRQVGdifYgbI4K7HNI/hVLIDbrxKo3SCeuzfowCvgB6UbHKdBJY2FRceHxFFmYjBn00YeP7ZodfjRI9ovPHlCj4pPnyrEjKBUED3vyZPp/gRhbQK17pB2AODmJ3W/d23c7JDV+4F+fiA0VLdGS1yXym2cXm8PoULV5cWRtf79avyVx+qj6tXqAS3x2tPRJ7Xi2r0F6H28H3142OD8YUG8ptVcUYfJsOj9/b+3Lb0pzWpNa05v3WzxPX5U05zWmr65hGlLa7IUtqX31F1lf/9mHerK7z8U++fPQ67++V0xNXyVutgXdj0sOjU6/JTXsyplHMz4/nQsYYV2PSq8OFxaTEtYORhlfAaXVS++J/rZyjclUB802hy6Pikr2dcyaZbN0rf49IWS1r/Jcy/N99wZHlyljkvyCeX+jWgg+JKzkle9r99+inz7Pey+3DNz5tnjOh2SkCBdutLe/qO56WdrC8wGaF1jrjANABSf6Vu/tJO1r0duzoqs/hrUcV1VPzd8euNPaKksFM8ANBKtxT/QkqkrlqpSw5yzLLYlM0Rkl/ylYEK76aMFX783Y2iGWmcTGkMxJLUpKDRm0EyuQKnDDlQa+9BuWdv0DgMwRuRgYMlyAqHXMUi6fYFCr9toJl9DadhbqPQGA+1uReyCHebCEtKEkY4gI6+fy1sMslOyZpMQ5JWxUXI7B5HJbddhXer3EhBWLLKTL8jNz8bakBPhMYYoHlMhIRIvYdnBtw62HbLbZd6FZSsykFwzIa7KvDyp7E25BtkBIY5hiA6BGPH05uJZGMicJPdcIsQTXjLMSOLmNAgxcbPT9WapYU2XCxBMYRmrfl6BXPkt0DZhP268lmsUHiaFCELCk2AyB17r6hyI3QzLeK7ydlaIAZHL3CPoUimP4pLaqnJ3qXE8YQVUYDTNQVMMxVIcVOdnPUIhnEe2GBDjQk4AAAAA') format('woff2'),
+  url('iconfont.woff?t=1551094238288') format('woff'),
+  url('iconfont.ttf?t=1551094238288') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+  url('iconfont.svg?t=1551094238288#ewordfun') format('svg'); /* iOS 4.1- */
+}
+
+.ewordfun {
+  font-family: "ewordfun" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ef-latest:before {
+  content: "\e625";
+}
+
+.ef-voice:before {
+  content: "\e634";
+}
+
+.ef-pen:before {
+  content: "\e635";
+}
+

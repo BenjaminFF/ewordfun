@@ -3,9 +3,23 @@
     <div class="mSidebar" :style="{transform:'translateX('+offsetX+'rem)'}">dfasdf</div>
     <div class="container" :style="{transform:'translateX('+offsetX+'rem)'}">
       <el-row class="main-header">
-        <el-col :span="2" @click.native="showMenu" style="cursor: pointer">
-          <i class="el-icon-menu" style="margin-left: 1rem" ></i>
+        <el-col :span="4" @click.native="showMenu" style="cursor: pointer">
+          <i class="el-icon-menu"></i>
           menu
+        </el-col>
+        <el-col :span="18" style="text-align: center;font-size: 1.5rem">
+          ewordfun
+        </el-col>
+        <el-col :span="4" style="display: flex;flex-direction: row-reverse">
+          <el-dropdown trigger="click" @command="handleUserDropdown">
+            <div style="cursor: pointer">
+              {{userInfo.name}}
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </div>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="logout">退出</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </el-col>
       </el-row>
       <div class="main-content">
@@ -35,6 +49,7 @@
     methods: {
       init() {
         this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        console.log(this.userInfo);
         this.defaultActive=this.$route.path=='/'?'/latestLearn':this.$route.path;
         this.fetchData();
       },
@@ -60,6 +75,7 @@
         this.$router.push('/createSet');
       },
       handleUserDropdown(command){
+        console.log(command);
         if(command=='logout'){
           this.logout();
           return;
@@ -123,6 +139,8 @@
     align-items: center;
     background-color: white;
     box-shadow: 20px 0px 30px 0px rgba(0, 0, 0, 0.11);
+    padding-left: 2%;
+    padding-right: 2%;
   }
 
   .app-main-header-input {

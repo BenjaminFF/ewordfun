@@ -7,6 +7,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueI18n from 'vue-i18n'
 import langStorage from './lang'
+import icon from '../ef-theme/icons/iconfont.css'
 
 Vue.use(VueAxios, axios)
 
