@@ -44,7 +44,7 @@ module.exports = {
     termHint:'term...',
     definitionHint:'definition...',
     addCard:"+Add Card",
-    return:"Return"
+    return:"RETURN"
   },
   deleteDialog:{
     delete:'Delete',

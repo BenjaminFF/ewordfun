@@ -9,6 +9,7 @@
   width: 100%;
   height: 100%;
   z-index: 1000;
+  overflow: hidden;
 }
 
 @include b(l-learncard) {
@@ -16,14 +17,19 @@
   margin-left: 10%;
   margin-bottom: 1rem;
   background-color: white;
-  display: flex;
-  align-items: center;
-  position: relative;
+
+  @include e(l-container){
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
 
   @include e(input) {
     box-sizing: border-box;
     border: none;
-    padding: 1rem 0rem;
+    padding: 1.5rem 0rem;
     & .el-textarea__inner {
       border: none;
       font-size: 1.5rem;

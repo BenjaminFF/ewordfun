@@ -1,12 +1,12 @@
 <template>
-  <transition enter-active-class="animated slideInDown" leave-active-class="animated slideOutUp">
+  <transition enter-active-class="animated slideInDown" leave-active-class="animated fadeOut" v-on:after-enter="afterEnter">
     <div class="l-create-set">
       <div class="l-create-set__list-container">
-        <ef-list ref="EfList" :list="cards" :wrap-height="'100%'" style="width: 100%;">
-          <div class="l-create-set-card" v-for="(card,index) in cards" :key="n">
+        <anim-list ref="animList" :items="cards" style="width: 100%;height: 75%;margin-top: 5%;">
+          <div class="l-create-set-card" v-for="(card,index) in cards" :key="card.key" :class="{'animated bounceInLeft':card.isInitialCard}">
             <el-row class="l-create-set-card__main" @mouseenter.native="card.hovered=true" ref="cards"
-                    @mouseleave.native="card.hovered=false">
-              <el-col class="id" :span="1" style="text-align: center;color: black">{{index+1}}</el-col>
+                    @mouseleave.native="card.hovered=false" :style="{backgroundColor:card.backgroundColor}">
+              <el-col class="l-create-set-card__id" :span="1">{{index+1}}</el-col>
               <el-col class="term" :span="11">
                 <el-input type="textarea" autosize resize="none" style="margin-rigt: 5%" v-model="card.term" ref="termInput"></el-input>
               </el-col>
@@ -15,27 +15,27 @@
                           v-model="card.definition" ref="defInput"></el-input>
               </el-col>
               <el-col class="delete" :span="1" style="text-align: center;cursor: pointer;font-size: 1.2rem">
-                <i class="el-icon-delete" style="color: black" @click="delCard(index)" v-if="card.hovered"></i>
+                <i class="ef-icon-trash" @click="delCard(index)" v-if="card.hovered" v-ripple></i>
               </el-col>
-              <div class="l-create-set-card__bottom-add" v-if="index==cards.length-1" @click="addCard(index-1)">
+              <div class="l-create-set-card__bottom-add" v-if="index==cards.length-1" @click="addCard(index-1)" :style="{backgroundColor:card.backgroundColor}">
                 {{$t('createSet.addCard')}}
               </div>
             </el-row>
             <div style="width: 70%;text-align: center;height: 3rem" @mouseenter="card.addVisible=true"
                  @mouseleave="card.addVisible=false">
-            <span class="l-create-set-card__add-button animated bounceIn" @click="addCard(index)"
-                  v-if="card.addVisible&&index<cards.length-2">
-              <i class="el-icon-plus"></i>
+            <span class="l-create-set-card__add-button animated fadeIn" @click="addCard(index)" :style="{backgroundColor:card.backgroundColor}"
+                  v-if="card.addVisible&&index<cards.length-2" v-ripple>
+              <i class="ef-icon-add"></i>
             </span>
             </div>
           </div>
-        </ef-list>
-        <span class="confirm-fab" @mouseover="confirmHovered=true" @mouseleave="confirmHovered=false"
+        </anim-list>
+        <span class="l-create-set__confirm-fab" @mouseover="confirmHovered=true" @mouseleave="confirmHovered=false"
               :class="[{'animated tada':confirmHovered}]" @click="openDialog">
-        <i class="el-icon-check"></i>
+        <i class="ef-icon-tick"></i>
       </span>
       </div>
-      <el-button class="create-set-return" @click="createSetReturn">{{$t('createSet.return')}}</el-button>
+      <i class="l-create-set__return ef-icon-return" @click="createSetReturn"></i>
       <el-dialog
         :title="$t('createDialog.header')"
         :center="true"
@@ -61,11 +61,11 @@
 </template>
 
 <script>
-  import EfList from "./ef-list/list";
+  import AnimList from "./anim-list";
 
   export default {
     name: "create-set",
-    components: {EfList},
+    components: {AnimList},
     data() {
       return {
         cards: [],
@@ -76,7 +76,7 @@
       }
     },
     created() {
-      this.init();
+      //this.init();
     },
     methods: {
       init() {
@@ -89,38 +89,84 @@
             { required: true, message: this.$t('createDialog.nameEmpty'), trigger: 'blur' }
           ]
         }
+        let cards=[];
         let card1 = {
+          key:Date.now(),
           term: "",
           definition: "",
           hovered: false,
-          addVisible: false
+          addVisible: false,
+          backgroundColor: "",
+          isInitialCard:true,
         }
         let card2 = {
+          key:Date.now(),
           term: "",
           definition: "",
           hovered: false,
-          addVisible: false
+          addVisible: false,
+          backgroundColor: "",
+          isInitialCard:true,
         }
         let card3 = {
           term: "",
           definition: "",
           hovered: false,
-          addVisible: false
+          addVisible: false,
+          backgroundColor: "",
+          isInitialCard:true
         }
-        this.cards.push(card1, card2, card3);
-      },
-      delCard(index) {
-        this.$refs.EfList.delItem(index);
-        console.log(this.cards);
-      },
-      addCard(index) {
-        this.$refs.EfList.addItem(index, {
+        let card4 = {
           term: "",
           definition: "",
           hovered: false,
-          addVisible: false
+          addVisible: false,
+          backgroundColor: "",
+          isInitialCard:true
+        }
+        cards.push(card1, card2, card3,card4);
+        cards.forEach((card,index)=>{
+          card.backgroundColor=this.getSpecialColor();
+          if(index!=0){
+            while (card.backgroundColor==cards[index-1].backgroundColor){
+              card.backgroundColor=this.getSpecialColor();
+            }
+          }
+          if(index!=cards.length-1){
+            while (card.backgroundColor==cards[index+1].backgroundColor){
+              card.backgroundColor=this.getSpecialColor();
+            }
+          }
         });
-        console.log(this.cards);
+        this.cards=cards;
+        setTimeout(()=>{
+          this.cards.forEach((card)=>{
+            card.isInitialCard=false;
+          });
+        },1000);
+      },
+      afterEnter(){
+        this.init();
+      },
+      delCard(index) {
+        this.$refs.animList.delItem(index);
+      },
+      addCard(index) {
+        let backgroundColor=this.getSpecialColor();
+        if(index!=0){
+          while (backgroundColor==this.cards[index-1].backgroundColor){
+            backgroundColor=this.getSpecialColor();
+          }
+        }
+        this.$refs.animList.addItem(index+1, {
+          key:Date.now(),
+          term: "",
+          definition: "",
+          hovered: false,
+          addVisible: false,
+          backgroundColor: backgroundColor,
+          isInitialCard:false
+        });
       },
 
       openDialog() {
@@ -191,26 +237,11 @@
   }
 
   .create-set-return{
-    position: absolute;
-    left: 2rem;
-    top: 2rem;
+
   }
 </style>
 
 <style>
-  .l-create-set-card .el-textarea {
-    width: 95%;
-    padding-top: 1rem;
-    padding-bottom: 2rem;
-  }
-
-  .l-create-set-card .el-textarea__inner {
-    border: none;
-    border-bottom: 2px solid black;
-    font-size: 1.5rem;
-    background-color: transparent;
-  }
-
   .createSetDialog{
     min-width: 30rem;
   }

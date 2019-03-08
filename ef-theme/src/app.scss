@@ -1,63 +1,44 @@
 @import "mixins/mixins";
 @import "common/var";
 
-@include b(app-sidebar){
+@include b(l-app) {
+  width: 100%;
   height: 100%;
-  background-color: $--ef-color-primary;
-  z-index: 1000;
-  position: relative;
-  color: white;
+  overflow: hidden;
+  transition: all .6s ease-in-out;
+  position: absolute;
+  left: 0;
+  top: 0;
 
-  @include e(header){
+  @include e(main-content){
     width: 100%;
-    height: 24%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  @include e(items-container){
-    width: 100%;
-    height: fit-content;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+    height: 90%;
   }
 }
 
-@include b(app-sidebar-item){
+@include b(l-app-header) {
   width: 100%;
-  height: 5rem;
-  background-color: $--ef-color-primary;
-  flex-grow: 0;
-  flex-shrink: 0;
+  height: 10%;
   display: flex;
   align-items: center;
-  font-size: 1.2rem;
-  cursor: pointer;
-  color: white;
+  padding-left: 20%;
+  padding-right: 20%;
 
-  @include when(active){
-    background-color: white;
-    color: $--ef-color-primary !important;
-    @include e(icon){
-      color: $--ef-color-primary !important;
-    }
-  }
-
-  @include e(icon){
-    font-size: 1.2rem;
-    margin-left: 5%;
-    margin-right: 5%;
-    color: white !important;
-  }
-
-  &:hover{
-    color: $--ef-color-primary !important;
+  @include e(userInfo) {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: $--ef-color-primary;
   }
 
   @include e(title){
-    letter-spacing: 2px;
+    font-size: 2rem;
+    color: $--ef-color-primary;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  @include e(menu){
+    color: $--ef-color-primary !important;
+    cursor: pointer;
   }
 }

@@ -7,9 +7,12 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueI18n from 'vue-i18n'
 import langStorage from './lang'
-import icon from '../ef-theme/icons/iconfont.css'
+import util from './util'
+import '../theme/index.css'
+import materialicons from './assets/materialicons.css'
 
 Vue.use(VueAxios, axios)
+Vue.use(util)
 
 Vue.config.productionTip = false
 
