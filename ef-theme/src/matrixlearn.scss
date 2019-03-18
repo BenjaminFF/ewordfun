@@ -1,0 +1,224 @@
+@import "common/var";
+@import "mixins/mixins";
+
+@include b(matrix-learn) {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: $--ml-background-color;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @include e(inner) {
+    width: 60%;
+    height: 85%;
+  }
+
+  @include e(controlBar) {
+    width: 100%;
+    height: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $--ml-control-bar-color;
+    font-size: 1.8rem;
+    position: relative;
+  }
+}
+
+@include b(ml-progress) {
+  width: 100%;
+  height: 8px;
+  background-color: $--ml-progress-background-color;
+  border-radius: 1rem;
+  position: relative;
+
+  @include e(inner) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 5%;
+    height: 100%;
+    border-radius: 1rem;
+  }
+}
+
+@include b(ml-underlines) {
+  width: 100%;
+  height: 10%;
+  display: flex;
+  justify-content: center;
+  font-size: 2rem;
+  color: $--ml-underline-text-color;
+
+  @include e(underline) {
+    font-size: 2.2rem;
+    min-width: 1.5rem;
+    height: 2.2rem;
+    border-bottom: 2px solid $--ml-underline-border-color;
+    margin-left: 5px;
+    margin-right: 5px;
+    transition: background-color .5s ease-in;
+
+    @include when(active) {
+      border-bottom: none;
+      margin-right: 0px;
+      margin-left: 0px;
+      min-width: fit-content;
+    }
+
+    @include when(success) {
+      color: $--ml-success-color;
+    }
+
+    @include when(error) {
+      color: $--ml-error-color;
+      border-color: $--ml-error-color;
+    }
+
+    @include when(space) {
+      border-bottom: none;
+      margin-right: 0px;
+      margin-left: 0px;
+    }
+  }
+}
+
+@include b(ml-definition) {
+  width: 100%;
+  height: 30%;
+  word-wrap: break-word;
+  text-align: center;
+  font-size: 2rem;
+  color: $--ml-definition-text-color;
+
+  & .el-scrollbar__wrap {
+    overflow-x: hidden !important;
+  }
+}
+
+@include b(ml-matrix) {
+  height: 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @include e(inner) {
+    --row: 3;
+    --column: 3;
+    --size: 6.5rem;
+    width: fit-content;
+    height: fit-content;
+    display: grid;
+    grid-template-columns: repeat(var(--row), var(--size));
+    grid-template-rows: repeat(var(--column), var(--size));
+  }
+
+  @include e(cell) {
+    position: relative;
+    margin: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    cursor: pointer;
+    background-color: $--ml-matrix-background-color;
+    color: $--ml-matrix-text-color;
+    font-size: 1.5rem;
+    border: 2px solid $--ml-matrix-border-color;
+
+    @include when(active) {
+      background-color: $--ml-matrix-active-background-color;
+    }
+
+    @include when(success) {
+      background-color: $--ml-success-color;
+      border: 2px solid $--ml-success-color;
+      color: white;
+    }
+    @include when(error) {
+      background-color: $--ml-error-color;
+      border: 2px solid $--ml-error-color;
+      color: white;
+    }
+  }
+}
+
+@include b(ml-bottom-bar) {
+  width: 100%;
+  height: 15%;
+  background-color: $--ml-bottom-bar-color;
+  user-select: none;
+
+  @include when(success) {
+    background-color: rgba($--ml-success-color,0.5);
+  }
+
+  @include when(error) {
+    background-color: rgba($--ml-error-color,0.5);
+  }
+
+  @include e(button) {
+    padding: 1rem 2.5rem;
+    border-radius: 5rem;
+    background-color: $--ml-bottom-bar-button-color;
+    color: white;
+    font-size: 1.2rem;
+    width: fit-content;
+    height: fit-content;
+    letter-spacing: 1rem;
+    text-indent: 1rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: darken($--ml-bottom-bar-button-color, 10%);
+    }
+
+    @include when(invisible) {
+      z-index: -1;
+      color: transparent;
+      background-color: transparent;
+    }
+
+    @include when(success) {
+      background-color: $--ml-success-color;
+    }
+
+    @include when(error) {
+      background-color: $--ml-error-color;
+    }
+  }
+
+  @include e(info-icon) {
+    padding: 1.5rem;
+    font-size: 2.5rem;
+    background-color: white;
+    border-radius: 3rem;
+    color: white;
+
+    @include when(success) {
+      color: $--ml-success-color;
+    }
+    @include when(error) {
+      color: $--ml-error-color;
+    }
+  }
+
+  @include e(info-text) {
+    margin-left: 1rem;
+    font-size: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    @include when(success) {
+      color: $--ml-success-color;
+    }
+    @include when(error) {
+      color: darken($--ml-error-color,10%);
+    }
+  }
+}

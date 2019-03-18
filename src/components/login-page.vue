@@ -81,7 +81,7 @@
                 loginTime:Date.now()
               }
               localStorage.setItem('userInfo',JSON.stringify(userInfo));
-              this.$router.push('/latestLearn');
+              this.$router.push('/userSet');
             }else {
               this.$message({
                 message: '密码错误，请重新登陆',

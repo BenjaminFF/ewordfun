@@ -7,6 +7,7 @@ import userSet from '@/components/userset/user-set'
 import helpCenter from '@/components/helpcenter/help-center'
 import setting from '@/components/setting/setting'
 import setLearn from '@/components/setlearn/set-learn'
+import matrixLearn from '@/components/setlearn/matrix-learn'
 
 Vue.use(Router)
 
@@ -15,7 +16,7 @@ const router = new Router({
     {
       path: '/',
       name: 'index',
-      component: latestLearn
+      component: userSet
     },
     {
       path: '/login',
@@ -51,6 +52,11 @@ const router = new Router({
       path: '/setLearn/:uid/:sid',
       name: 'setLearn',
       component: setLearn
+    },
+    {
+      path: '/matrixLearn/:uid/:sid',
+      name: 'matrixLearn',
+      component: matrixLearn
     }
   ]
 });

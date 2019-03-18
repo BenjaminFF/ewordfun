@@ -4,11 +4,18 @@ $--ef-color-primary: #17bfc8;
 $--ef-color-white: #fff !default;
 $--ef-color-black: #000 !default;
 $--ef-color-bg: #f0fafa !default;
+$--ef-color-success: $--ef-color-primary;
+$--ef-color-error: #F56C6C !default;
+$--ef-color-lighter: #F7F7F7 !default;
+$--ef-color-light-gray: #e1e1e1 !default;
+$--ef-color-mid-gray: #c3c3c3 !default;
+$--ef-color-high-gray: #a5a5a5 !default;
+$--ef-color-dark-gray: #878787 !default;
 
 /*app
 --------------------- */
 $--app-sidebar-background-color: $--ef-color-white !default;
-$--app-main-background-color: rgba(23, 191, 200, 0.05) !default;
+$--app-main-background-color: $--ef-color-lighter !default;
 
 
   /*menu
@@ -21,6 +28,24 @@ $--menu-item-active-text-color: $--ef-color-primary !default;
 ------------------------ */
 $--list-scrollbar-background-color: rgba(175, 175, 175, 0.51) !default;
 $--list-scrollbar-thumb-color: rgb(164, 164, 164) !default;
+
+/*matrixLearn
+-------------------*/
+$--ml-success-color:$--ef-color-success !default;
+$--ml-error-color:$--ef-color-error !default;
+$--ml-background-color:$--ef-color-lighter !default;
+$--ml-control-bar-color: $--ef-color-high-gray !default;
+$--ml-progress-background-color:$--ef-color-light-gray !default;
+$--ml-progress-color:$--ef-color-primary !default;
+$--ml-underline-border-color:$--ef-color-dark-gray !default;
+$--ml-underline-text-color:$--ef-color-dark-gray !default;
+$--ml-definition-text-color: $--ef-color-dark-gray !default;
+$--ml-matrix-background-color: $--ef-color-white !default;
+$--ml-matrix-active-background-color: $--ef-color-light-gray !default;
+$--ml-matrix-text-color: $--ef-color-dark-gray !default;
+$--ml-matrix-border-color: $--ef-color-light-gray !default;
+$--ml-bottom-bar-color:$--ef-color-light-gray !default;
+$--ml-bottom-bar-button-color:$--ef-color-mid-gray !default;
 
 
 /* Break-point

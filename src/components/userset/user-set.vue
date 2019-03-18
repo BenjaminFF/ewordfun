@@ -36,7 +36,10 @@
             <el-row class="us-list-item animated fadeIn" :style="{backgroundColor:set.backgroundColor}" @click.native="openItem(set)">
               <el-col :span="18" class="us-list-item__info-container">
                 <div class="us-list-item__name">{{set.name}}</div>
-                <div class="us-list-item__intro">{{set.intro}}</div>
+                <div class="us-list-item__intro">
+                  {{set.intro}}
+                  <span>{{set.vcount+' terms'}}</span>
+                </div>
               </el-col>
               <el-col :span="6" class="us-list-item__icons">
                 <v-btn icon style="font-size:inherit;cursor: pointer;color: inherit;margin-right: 0rem" @click.stop="starToServer(set)">
