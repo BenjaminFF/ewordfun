@@ -57,11 +57,10 @@
   cursor: pointer;
   color: white;
   border-radius: 1.5rem;
+  transition: all 0.3s ease-in-out;
 
   &:hover {
-    -webkit-transform: scale3d(1.03, 1.03, 1.03);
-    transform: scale3d(1.03, 1.03, 1.03);
-    transition: all 0.2s ease-in-out;
+    transform: scale3d(1.05, 1.05,1.05);
   }
 
   @include e(date) {

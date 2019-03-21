@@ -1,7 +1,7 @@
 <template>
   <div class="set-learn">
     <div class="set-learn__inner animated fadeIn">
-      <div class="set-learn-header">
+      <div class="set-learn-header" v-if="vocabularies.length>0">
         <div style="font-size: 3rem;color: white;margin: 1rem">{{set.name}}</div>
         <div style="font-size: 2rem;color: white">{{set.intro}}</div>
       </div>

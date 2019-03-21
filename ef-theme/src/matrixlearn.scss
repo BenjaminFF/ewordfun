@@ -11,6 +11,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 
   @include e(inner) {
     width: 60%;
@@ -24,8 +25,20 @@
     justify-content: center;
     align-items: center;
     color: $--ml-control-bar-color;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     position: relative;
+  }
+
+  @include e(content-layout) {
+    width: 100%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  @include e(loading) {
+    background-color: $--ml-loading-color !important;
   }
 }
 
@@ -40,19 +53,21 @@
     position: absolute;
     left: 0;
     top: 0;
-    width: 5%;
     height: 100%;
     border-radius: 1rem;
+    background-color: $--ml-progress-color;
+    transition: all ease-in-out .3s;
   }
 }
 
 @include b(ml-underlines) {
-  width: 100%;
-  height: 10%;
+  width: fit-content;
+  height: fit-content;
   display: flex;
   justify-content: center;
   font-size: 2rem;
   color: $--ml-underline-text-color;
+  cursor: pointer;
 
   @include e(underline) {
     font-size: 2.2rem;
@@ -61,7 +76,8 @@
     border-bottom: 2px solid $--ml-underline-border-color;
     margin-left: 5px;
     margin-right: 5px;
-    transition: background-color .5s ease-in;
+    letter-spacing: 0.1rem;
+    user-select: none;
 
     @include when(active) {
       border-bottom: none;
@@ -89,11 +105,13 @@
 
 @include b(ml-definition) {
   width: 100%;
-  height: 30%;
+  height: 40%;
+  margin-top: 2rem;
   word-wrap: break-word;
   text-align: center;
   font-size: 2rem;
   color: $--ml-definition-text-color;
+  user-select: none;
 
   & .el-scrollbar__wrap {
     overflow-x: hidden !important;
@@ -155,18 +173,34 @@
   user-select: none;
 
   @include when(success) {
-    background-color: rgba($--ml-success-color,0.5);
+    background-color: rgba($--ml-success-color, 0.5);
   }
 
   @include when(error) {
-    background-color: rgba($--ml-error-color,0.5);
+    background-color: rgba($--ml-error-color, 0.5);
+  }
+
+  @include e(progress){
+    position: absolute;
+    & .el-progress-circle__track{
+      stroke: $--ml-bottom-bar-progress-background-color !important;
+    }
+
+    & .el-progress__text{
+      font-size: 1.5rem !important;
+      color: $--ml-success-color;
+    }
+
+    & .el-progress-circle__path{
+      stroke: $--ml-success-color;
+    }
   }
 
   @include e(button) {
     padding: 1rem 2.5rem;
     border-radius: 5rem;
     background-color: $--ml-bottom-bar-button-color;
-    color: white;
+    color: $--ml-bottom-bar-button-text-color;
     font-size: 1.2rem;
     width: fit-content;
     height: fit-content;
@@ -186,10 +220,12 @@
 
     @include when(success) {
       background-color: $--ml-success-color;
+      color: white;
     }
 
     @include when(error) {
       background-color: $--ml-error-color;
+      color: white;
     }
   }
 
@@ -218,7 +254,43 @@
       color: $--ml-success-color;
     }
     @include when(error) {
-      color: darken($--ml-error-color,10%);
+      color: darken($--ml-error-color, 10%);
     }
+  }
+}
+
+@include b(ml-list) {
+  width: 100%;
+  height: 80%;
+
+  @include e(title) {
+    font-size: 1.5rem;
+    margin-left: 5%;
+
+    @include when(unpassed) {
+      color: $--ml-list-unpassed-title-color;
+    }
+  }
+
+  @include e(scrollbar) {
+    width: 100%;
+    height: 80%;
+    margin-top: 2rem;
+
+    & .el-scrollbar__wrap {
+      overflow-x: hidden;
+    }
+  }
+
+  @include e(item) {
+    width: 90%;
+    height: fit-content;
+    font-size: 1.5rem;
+    margin-left: 5%;
+    color: $--ml-list-item-text-color;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    white-space: pre-line;
+    border-bottom: 1px solid $--ml-list-item-border-color;
   }
 }

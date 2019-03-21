@@ -1,5 +1,5 @@
 <template>
-  <transition enter-active-class="animated slideInDown" leave-active-class="animated fadeOut" v-on:after-enter="afterEnter">
+  <transition enter-active-class="animated slideInDown" leave-active-class="animated fadeOut faster" v-on:after-enter="afterEnter">
     <div class="l-create-set">
       <div class="l-create-set__list-container">
         <anim-list ref="animList" :items="cards" style="width: 100%;height: 75%;margin-top: 5%;">

@@ -33,20 +33,32 @@ $--list-scrollbar-thumb-color: rgb(164, 164, 164) !default;
 -------------------*/
 $--ml-success-color:$--ef-color-success !default;
 $--ml-error-color:$--ef-color-error !default;
+$--ml-loading-color:$--ef-color-primary !default;
 $--ml-background-color:$--ef-color-lighter !default;
+
 $--ml-control-bar-color: $--ef-color-high-gray !default;
 $--ml-progress-background-color:$--ef-color-light-gray !default;
 $--ml-progress-color:$--ef-color-primary !default;
+
 $--ml-underline-border-color:$--ef-color-dark-gray !default;
 $--ml-underline-text-color:$--ef-color-dark-gray !default;
+
 $--ml-definition-text-color: $--ef-color-dark-gray !default;
+
 $--ml-matrix-background-color: $--ef-color-white !default;
 $--ml-matrix-active-background-color: $--ef-color-light-gray !default;
 $--ml-matrix-text-color: $--ef-color-dark-gray !default;
 $--ml-matrix-border-color: $--ef-color-light-gray !default;
+
 $--ml-bottom-bar-color:$--ef-color-light-gray !default;
 $--ml-bottom-bar-button-color:$--ef-color-mid-gray !default;
+$--ml-bottom-bar-button-text-color:$--ef-color-dark-gray !default;
+$--ml-bottom-bar-progress-background-color:$--ef-color-lighter !default;
 
+$--ml-list-title-color:$--ef-color-primary !default;
+$--ml-list-unpassed-title-color: $--ef-color-error !default;
+$--ml-list-item-text-color:$--ef-color-dark-gray !default;
+$--ml-list-item-border-color:$--ef-color-light-gray !default;
 
 /* Break-point
 --------------------------*/
