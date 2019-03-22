@@ -101,7 +101,8 @@
         curCards: [],
         dataLoading: true,
         stepStates: [],
-        totalProgress:{}
+        totalProgress:{},
+        totalCards:[]              //用来显示重新学习页面card没有通过的次数
       }
     },
     created() {
@@ -115,6 +116,7 @@
       getStepState() {
         return this.stepStates.filter((state) => state.Id == this.progress.stepStateId)[0];
       },
+      //0表示没有checkAnswer,1表示right answer，2表示wrong answer
       answerStateId() {
         let stepState = this.stepStates.filter((state) => state.Id == this.progress.stepStateId)[0];
         if (stepState.Id != 1) {
@@ -144,11 +146,19 @@
           }
         }).then((res) => {
           this.set = res.data.set;
+          //this.totalCards=[...res.data.vocabularies];
           this.curCards = this.buildCards(res.data.vocabularies);
+          /*this.curCards.forEach((card)=>{
+            card.matrixCells.forEach((cell)=>{
+              console.log(cell.text);
+            })
+          });*/
+          let cur=res.data.vocabularies.length-this.curCards.length;
+          let total=res.data.vocabularies.length;
           this.progress = {
-            cur: 0,
-            total: this.curCards.length,
-            percentage: 0,
+            cur: cur,
+            total: total,
+            percentage: (cur/total)*100,
             stepStateId: 0,
             unpassCards:0,
             checkedAnswer:false
@@ -179,8 +189,16 @@
         if (curCard.term == answer) {
           curCard.Passed = true;
           this.totalProgress.cur++;
-          //上传状态至服务器。。。。
+          this.axios.post('/api/v_record/update',{
+            v_record:JSON.stringify({rid:curCard.rid,rmatrix:1})
+          });
+        }else {
+          curCard.rmatrix_unpass_count++;
+          this.axios.post('/api/v_record/update',{
+            v_record:JSON.stringify({rid:curCard.rid,rmatrix_unpass_count:curCard.rmatrix_unpass_count})
+          });
         }
+
         this.progress.checkedAnswer=true;
         this.updateStepState();
       },
@@ -202,6 +220,7 @@
         this.progress.total = this.curCards.length;
         this.progress.percentage = 0;
       },
+      //重新学习页面显示所有card和它们错误的次数
       reLearn() {
 
       },
@@ -209,10 +228,6 @@
         this.stepStates.filter((state) => {
           return state.Id == this.progress.stepStateId;
         })[0].func.call(this);
-      },
-      //0表示没有checkAnswer,1表示right answer，2表示wrong answer
-      getAnswerStateId() {
-
       },
       routerGo(step) {
         this.$router.go(step);
@@ -248,9 +263,10 @@
 
           let matrixStrs = [...splitStrs].filter((str) => str != " ");        //matrix里面没有空格
           while (matrixStrs.length < 9) {          //凑够9个
-            let randomChars = splitStrs[Math.floor(Math.random() * splitStrs.length)];
+            let randomChars = this.mixStr(matrixStrs[Math.floor(Math.random() * matrixStrs.length)]);
             matrixStrs.push(randomChars);
           }
+          console.log(matrixStrs);
           let matrixCells = [];
           matrixStrs.forEach((str) => {
             matrixCells.push({
@@ -277,7 +293,6 @@
               cell.isActive=false;
               underlines[curCard.curPos].text="";
               underlines[curCard.curPos].isActive=false;
-              console.log('gg');
               return;
             }
           }
