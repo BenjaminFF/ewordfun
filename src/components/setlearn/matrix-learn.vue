@@ -44,12 +44,13 @@
           </div>
         </div>
       </div>
-      <div class="ml-list animated fadeIn" v-if="curCards.length==progress.cur">
+      <div class="ml-list animated fadeIn" v-if="progress.stepStateId==2||progress.stepStateId==3">
         <div class="ml-list__title is-unpassed">{{'错误单词'+progress.unpassCards.length+'个'}}</div>
         <el-scrollbar class="ml-list__scrollbar">
           <el-row v-for="card in progress.unpassCards" class="ml-list__item">
+            <el-col :span="2" class="unpassed_count" :class="{'is-zero':card.rmatrix_unpass_count==0}">{{card.rmatrix_unpass_count==0?"+1":"-"+card.rmatrix_unpass_count}}</el-col>
             <el-col :span="8">{{card.term}}</el-col>
-            <el-col :span="16">{{card.definition}}</el-col>
+            <el-col :span="14">{{card.definition}}</el-col>
           </el-row>
         </el-scrollbar>
       </div>
@@ -62,7 +63,8 @@
              :class="{'is-invisible':answerStateId!=0||curCards.length==progress.cur}"
              @click="startNextCard">跳过
         </div>
-        <el-progress type="circle" :percentage="totalProgress.percentage" width="110" stroke-width="8" class="ml-bottom-bar__progress"
+        <el-progress type="circle" :percentage="totalProgress.percentage" width="110" stroke-width="8"
+                     class="ml-bottom-bar__progress"
                      v-if="curCards.length==progress.cur"></el-progress>
         <div style="width: fit-content;position: absolute;display: flex"
              v-if="answerStateId!=0">
@@ -101,8 +103,8 @@
         curCards: [],
         dataLoading: true,
         stepStates: [],
-        totalProgress:{},
-        totalCards:[]              //用来显示重新学习页面card没有通过的次数
+        totalProgress: {},
+        totalCards: []              //用来显示重新学习页面card没有通过的次数
       }
     },
     created() {
@@ -146,26 +148,29 @@
           }
         }).then((res) => {
           this.set = res.data.set;
-          //this.totalCards=[...res.data.vocabularies];
-          this.curCards = this.buildCards(res.data.vocabularies);
-          /*this.curCards.forEach((card)=>{
-            card.matrixCells.forEach((cell)=>{
-              console.log(cell.text);
+          this.curCards = this.buildCards(res.data.vocabularies);         //初始时的curCards包含所有card,passed会在数据开头，后面的curCards只包含unpassed cards如果全部Pass了，自动刷新
+          this.curCards.forEach((card)=>{
+            this.totalCards.push({
+              term:card.term,
+              definition:card.definition,
+              rmatrix_unpass_count: card.rmatrix_unpass_count,
+              rid:card.rid
             })
-          });*/
-          let cur=res.data.vocabularies.length-this.curCards.length;
-          let total=res.data.vocabularies.length;
+          })
+          console.log(this.curCards);
+          let cur = this.curCards.filter((card) => card.Passed).length;
+          let total = this.totalCards.length;
           this.progress = {
             cur: cur,
             total: total,
-            percentage: (cur/total)*100,
-            stepStateId: 0,
-            unpassCards:0,
-            checkedAnswer:false
+            percentage: (cur / total) * 100,
+            stepStateId: 3,
+            unpassCards: this.totalCards,
+            checkedAnswer: false
           }
-          this.totalProgress={
-            cur:0,
-            total:res.data.vocabularies.length,
+          this.totalProgress = {
+            cur: cur,
+            total: this.totalCards.length,
             percentage: 0,
           }
           setTimeout(() => {
@@ -189,33 +194,35 @@
         if (curCard.term == answer) {
           curCard.Passed = true;
           this.totalProgress.cur++;
-          this.axios.post('/api/v_record/update',{
-            v_record:JSON.stringify({rid:curCard.rid,rmatrix:1})
+          this.axios.post('/api/v_record/update', {
+            v_record: JSON.stringify({rid: curCard.rid, rmatrix: 1})
           });
-        }else {
+        } else {
           curCard.rmatrix_unpass_count++;
-          this.axios.post('/api/v_record/update',{
-            v_record:JSON.stringify({rid:curCard.rid,rmatrix_unpass_count:curCard.rmatrix_unpass_count})
+          this.axios.post('/api/v_record/update', {
+            v_record: JSON.stringify({rid: curCard.rid, rmatrix_unpass_count: curCard.rmatrix_unpass_count})
           });
         }
 
-        this.progress.checkedAnswer=true;
+        this.progress.checkedAnswer = true;
         this.updateStepState();
       },
       startNextCard() {
-        this.progress.checkedAnswer=false;
-        if (this.progress.total == this.progress.cur + 1) {              //表示一轮结束
-          this.progress.cur++;
-          this.progress.percentage = 100;
-          this.progress.unpassCards=this.curCards.filter((card) => !card.Passed);
-          this.totalProgress.percentage=(this.totalProgress.cur/this.totalProgress.total).toFixed(3)*100;
-        } else {
-          this.progress.cur++;
-          this.progress.percentage = (this.progress.cur / this.progress.total) * 100;
-        }
+        this.progress.checkedAnswer = false;
+        this.progress.cur++;              //这部会自动刷新stepStateId,所以后面要用nextTick
+        this.$nextTick(()=>{
+          let stepStateId = this.progress.stepStateId;
+          if (stepStateId == 2 || stepStateId == 3) {              //表示一轮结束或全部学习完成
+            this.progress.percentage = 100;
+            this.progress.unpassCards = stepStateId == 2 ? this.curCards.filter((card) => !card.Passed) : this.totalCards;
+            this.totalProgress.percentage = (this.totalProgress.cur / this.totalProgress.total).toFixed(3) * 100;
+          } else {
+            this.progress.percentage = (this.progress.cur / this.progress.total) * 100;
+          }
+        })
       },
       startNextRound() {
-        this.curCards=this.washCards(this.curCards);
+        this.curCards = this.washCards(this.curCards);
         this.progress.cur = 0;
         this.progress.total = this.curCards.length;
         this.progress.percentage = 0;
@@ -232,23 +239,34 @@
       routerGo(step) {
         this.$router.go(step);
       },
-      washCards(cards){
+      washCards(cards) {
         cards = cards.filter((card) => !card.Passed);
-        cards.forEach((card)=>{
-          card.underlines.forEach((underline)=>{
-            underline.isActive=false;
-            underline.text="";
+        cards.forEach((card) => {
+          card.underlines.forEach((underline) => {
+            underline.isActive = false;
+            underline.text = "";
           })
-          card.matrixCells.forEach((cell)=>{
-            cell.isActive=false;
+          card.matrixCells.forEach((cell) => {
+            cell.isActive = false;
           })
-          card.matrixCells=_.shuffle(card.matrixCells);
-          card.curPos=0;
+          card.matrixCells = _.shuffle(card.matrixCells);
+          card.curPos = 0;
         });
         return cards;
       },
       buildCards(vocabularies) {
-        let cards = _.shuffle(vocabularies.filter((vocabulary) => vocabulary.rmatrix == 0));        //筛选没有学习过的
+        let cards = vocabularies.filter((vocabulary) => vocabulary.rmatrix == 0);        //筛选没有学习过的
+        if(cards.length==0){              //全部学习完成
+          vocabularies.forEach((vocabulary)=>{
+            vocabulary.rmatrix_unpass_count=0;
+            vocabulary.rmatrix=0;
+            cards.push(vocabulary);
+          })
+          this.axios.post("/api/v_record/updateMany",{
+            v_records:JSON.stringify(cards)
+          })
+        }
+        cards=_.shuffle(cards);
         cards.forEach((card) => {
           let splitStrs = this.splitString(card.term);            //将term拆分成多个字符串
           let underlines = [];
@@ -266,7 +284,6 @@
             let randomChars = this.mixStr(matrixStrs[Math.floor(Math.random() * matrixStrs.length)]);
             matrixStrs.push(randomChars);
           }
-          console.log(matrixStrs);
           let matrixCells = [];
           matrixStrs.forEach((str) => {
             matrixCells.push({
@@ -279,20 +296,26 @@
           card.Passed = false;
           card.curPos = 0;
         })
+        vocabularies.forEach((vocabulary) => {            //这个步骤很有必要，因为要与progress同步
+          if (vocabulary.rmatrix == 1) {
+            vocabulary.Passed = true;
+            cards.unshift(vocabulary);
+          }
+        })
         return cards;
       },
-      withDrawMatrixCell(){
+      withDrawMatrixCell() {
         let curCard = this.curCards[this.progress.cur];
         let underlines = curCard.underlines;
-        let matrixCells=curCard.matrixCells;
-        if(curCard.curPos!=0){
-          curCard.curPos=underlines[curCard.curPos-1].isSpace?curCard.curPos-2:curCard.curPos-1;
-          for(let cell of matrixCells){
+        let matrixCells = curCard.matrixCells;
+        if (curCard.curPos != 0) {
+          curCard.curPos = underlines[curCard.curPos - 1].isSpace ? curCard.curPos - 2 : curCard.curPos - 1;
+          for (let cell of matrixCells) {
             //matrixCells中可能有相同text的cell,并且两个cell都被Active了，所以有了一次之后就return,并且一定只能unActive已经Active过的了
-            if(cell.text==underlines[curCard.curPos].text&&cell.isActive){
-              cell.isActive=false;
-              underlines[curCard.curPos].text="";
-              underlines[curCard.curPos].isActive=false;
+            if (cell.text == underlines[curCard.curPos].text && cell.isActive) {
+              cell.isActive = false;
+              underlines[curCard.curPos].text = "";
+              underlines[curCard.curPos].isActive = false;
               return;
             }
           }

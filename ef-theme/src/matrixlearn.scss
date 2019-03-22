@@ -27,6 +27,7 @@
     color: $--ml-control-bar-color;
     font-size: 1.5rem;
     position: relative;
+    user-select: none;
   }
 
   @include e(content-layout) {
@@ -292,5 +293,13 @@
     padding-bottom: 2rem;
     white-space: pre-line;
     border-bottom: 1px solid $--ml-list-item-border-color;
+
+    & .unpassed_count{
+      text-align: center;
+      color: $--ml-error-color;
+      @include when(zero){
+        color: $--ef-color-primary;
+      }
+    }
   }
 }
