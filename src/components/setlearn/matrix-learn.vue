@@ -249,7 +249,7 @@
           let matrixStrs = [...splitStrs].filter((str) => str != " ");        //matrix里面没有空格
           while (matrixStrs.length < 9) {          //凑够9个
             let randomChars = splitStrs[Math.floor(Math.random() * splitStrs.length)];
-            matrixStrs.push(this.mixStr(randomChars));
+            matrixStrs.push(randomChars);
           }
           let matrixCells = [];
           matrixStrs.forEach((str) => {
@@ -272,11 +272,13 @@
         if(curCard.curPos!=0){
           curCard.curPos=underlines[curCard.curPos-1].isSpace?curCard.curPos-2:curCard.curPos-1;
           for(let cell of matrixCells){
-            if(cell.text==underlines[curCard.curPos].text){
+            //matrixCells中可能有相同text的cell,并且两个cell都被Active了，所以有了一次之后就return,并且一定只能unActive已经Active过的了
+            if(cell.text==underlines[curCard.curPos].text&&cell.isActive){
               cell.isActive=false;
               underlines[curCard.curPos].text="";
               underlines[curCard.curPos].isActive=false;
-              return;                                     //matrixCells中可能有相同text的cell,并且两个cell都被Active了，所以有了一次之后就return
+              console.log('gg');
+              return;
             }
           }
         }
@@ -341,7 +343,6 @@
             return cells;
           }
         }
-
       }
     }
   }
