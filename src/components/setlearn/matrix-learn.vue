@@ -137,6 +137,9 @@
           {Id: 2, text: "下一轮", func: this.startNextRound},
           {Id: 3, text: "重新学习", func: this.reLearn}
         ]
+        this.totalCards=[];
+        this.curCards=[];
+        this.totalProgress={};
       },
       fetchData() {
         let sid = this.$route.params.sid;
@@ -224,6 +227,9 @@
           if (stepStateId == 2 || stepStateId == 3) {              //表示一轮结束或全部学习完成
             this.progress.percentage = 100;
             this.progress.unpassCards = stepStateId == 2 ? this.curCards.filter((card) => !card.Passed) : this.totalCards;
+            this.progress.unpassCards=this.progress.unpassCards.sort((card1,card2)=>{
+              return card2.rmatrix_unpass_count-card1.rmatrix_unpass_count
+            });
             this.totalProgress.percentage = (this.totalProgress.cur / this.totalProgress.total).toFixed(3) * 100;
           } else {
             this.progress.percentage = (this.progress.cur / this.progress.total) * 100;
@@ -238,7 +244,9 @@
       },
       //重新学习页面显示所有card和它们错误的次数
       reLearn() {
-
+        this.dataLoading=true;
+        this.init();
+        this.fetchData();
       },
       nextStep() {
         this.stepStates.filter((state) => {
