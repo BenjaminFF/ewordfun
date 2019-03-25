@@ -45,7 +45,7 @@
         </div>
       </div>
       <div class="ml-list animated fadeIn" v-if="progress.stepStateId==2||progress.stepStateId==3">
-        <div class="ml-list__title is-unpassed">{{'错误单词'+progress.unpassCards.length+'个'}}</div>
+        <div class="ml-list__title" :class="{'is-unpassed':progress.stepStateId==2}">{{progress.stepStateId==2?'错误单词'+progress.unpassCards.length+'个':"复习"}}</div>
         <el-scrollbar class="ml-list__scrollbar">
           <el-row v-for="card in progress.unpassCards" class="ml-list__item">
             <el-col :span="2" class="unpassed_count" :class="{'is-zero':card.rmatrix_unpass_count==0}">{{card.rmatrix_unpass_count==0?"+1":"-"+card.rmatrix_unpass_count}}</el-col>
@@ -61,7 +61,7 @@
       <el-col :span="12" style="display: flex;justify-content: center;align-items: center;height: 100%">
         <div class="ml-bottom-bar__button"
              :class="{'is-invisible':answerStateId!=0||curCards.length==progress.cur}"
-             @click="startNextCard">跳过
+             @click="skipCard">跳过
         </div>
         <el-progress type="circle" :percentage="totalProgress.percentage" width="110" stroke-width="8"
                      class="ml-bottom-bar__progress"
@@ -164,7 +164,7 @@
             cur: cur,
             total: total,
             percentage: (cur / total) * 100,
-            stepStateId: 3,
+            stepStateId: 0,
             unpassCards: this.totalCards,
             checkedAnswer: false
           }
@@ -206,6 +206,15 @@
 
         this.progress.checkedAnswer = true;
         this.updateStepState();
+      },
+      //skipCard means that you didn't pass the curCard.
+      skipCard(){
+        let curCard = this.curCards[this.progress.cur];
+        curCard.rmatrix_unpass_count++;
+        this.axios.post('/api/v_record/update', {
+          v_record: JSON.stringify({rid: curCard.rid, rmatrix_unpass_count: curCard.rmatrix_unpass_count})
+        });
+        this.startNextCard();
       },
       startNextCard() {
         this.progress.checkedAnswer = false;

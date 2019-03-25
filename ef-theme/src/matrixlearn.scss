@@ -267,6 +267,7 @@
   @include e(title) {
     font-size: 1.5rem;
     margin-left: 5%;
+    color: $--ml-success-color;
 
     @include when(unpassed) {
       color: $--ml-list-unpassed-title-color;
