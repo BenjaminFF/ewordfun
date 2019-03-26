@@ -198,8 +198,9 @@
   }
 
   @include e(button) {
-    padding: 1rem 2.5rem;
+    padding: 0.8rem 2.3rem;
     border-radius: 5rem;
+    border:2px solid $--ml-bottom-bar-button-color;
     background-color: $--ml-bottom-bar-button-color;
     color: $--ml-bottom-bar-button-text-color;
     font-size: 1.2rem;
@@ -207,26 +208,71 @@
     height: fit-content;
     letter-spacing: 1rem;
     text-indent: 1rem;
+    box-sizing: border-box;
+    outline: none;
     cursor: pointer;
 
-    &:hover {
-      background-color: darken($--ml-bottom-bar-button-color, 10%);
+    @include when(primary){
+      border-color: $--ef-color-primary;
+      background-color: $--ef-color-primary;
+      color: white;
+      &:hover {
+        background-color: lighten($--ef-color-primary, 2%);
+        border-color: lighten($--ef-color-primary, 2%);
+      }
+    }
+
+    @include when(plain){
+      border:2px solid $--ml-bottom-bar-plain-button-border-color;
+      background-color: transparent;
+      color: $--ml-bottom-bar-plain-button-text-color;
+      &:hover {
+        background-color: $--ml-bottom-bar-plain-button-border-color;
+        border:2px solid $--ml-bottom-bar-plain-button-border-color;
+        color: $--ef-color-lighter;
+      }
+    }
+
+    @include when(disabled){
+      cursor: default;
+      background-color: $--ml-disable-color;
+      border-color: $--ml-disable-color;
+      color: lighten($--ml-disable-color,30%);
+
+      &:hover{
+        background-color: $--ml-disable-color;
+        border-color: $--ml-disable-color;
+        color: lighten($--ml-disable-color,30%);
+      }
     }
 
     @include when(invisible) {
       z-index: -1;
       color: transparent;
       background-color: transparent;
+      border-color: transparent;
     }
 
     @include when(success) {
-      background-color: $--ml-success-color;
+      background-color: $--ml-success-color !important;
+      border-color: $--ml-success-color !important;
       color: white;
+
+      &:hover {
+        background-color: lighten($--ml-success-color, 2%);
+        border-color: lighten($--ml-success-color, 2%);;
+      }
     }
 
     @include when(error) {
       background-color: $--ml-error-color;
+      border-color: $--ml-error-color;
       color: white;
+
+      &:hover {
+        background-color: lighten($--ml-error-color, 2%);
+        border-color: lighten($--ml-error-color, 2%);;
+      }
     }
   }
 

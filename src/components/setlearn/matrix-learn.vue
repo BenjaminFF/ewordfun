@@ -59,7 +59,7 @@
             :class="{'is-error':answerStateId==2,'is-success':answerStateId==1}"
             v-if="!dataLoading">
       <el-col :span="12" style="display: flex;justify-content: center;align-items: center;height: 100%">
-        <div class="ml-bottom-bar__button"
+        <div class="ml-bottom-bar__button is-plain"
              :class="{'is-invisible':answerStateId!=0||curCards.length==progress.cur}"
              @click="skipCard">跳过
         </div>
@@ -82,10 +82,10 @@
         </div>
       </el-col>
       <el-col :span="12" style="display: flex;justify-content: center;align-items: center;height: 100%">
-        <div class="ml-bottom-bar__button" @click="nextStep"
-             :class="{'is-error':answerStateId==2,'is-success':answerStateId==1}">
+        <button class="ml-bottom-bar__button is-primary" @click="nextStep"
+             :class="{'is-error':answerStateId==2,'is-success':answerStateId==1,'is-disabled':getStepState.Id==0&&!canCheckAnswer}" :disabled="getStepState.Id==0&&!canCheckAnswer">
           {{getStepState.text}}
-        </div>
+        </button>
       </el-col>
     </el-row>
   </div>
@@ -126,6 +126,14 @@
         } else {
           let curCard = this.curCards[this.progress.cur];
           return curCard.Passed ? 1 : 2;
+        }
+      },
+      canCheckAnswer(){
+        if(this.progress.cur<this.curCards.length){
+          let curCard = this.curCards[this.progress.cur];
+          return curCard.curPos==curCard.underlines.length;
+        }else {
+          return false;
         }
       }
     },

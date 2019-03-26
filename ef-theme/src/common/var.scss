@@ -31,6 +31,7 @@ $--list-scrollbar-thumb-color: rgb(164, 164, 164) !default;
 
 /*matrixLearn
 -------------------*/
+$--ml-disable-color:$--ef-color-mid-gray !default;
 $--ml-success-color:$--ef-color-success !default;
 $--ml-error-color:$--ef-color-error !default;
 $--ml-loading-color:$--ef-color-primary !default;
@@ -52,8 +53,10 @@ $--ml-matrix-border-color: $--ef-color-light-gray !default;
 
 $--ml-bottom-bar-color:$--ef-color-light-gray !default;
 $--ml-bottom-bar-button-color:$--ef-color-mid-gray !default;
-$--ml-bottom-bar-button-text-color:$--ef-color-dark-gray !default;
+$--ml-bottom-bar-button-text-color:$--ef-color-lighter !default;
 $--ml-bottom-bar-progress-background-color:$--ef-color-lighter !default;
+$--ml-bottom-bar-plain-button-border-color:$--ef-color-mid-gray !default;
+$--ml-bottom-bar-plain-button-text-color:$--ef-color-dark-gray !default;
 
 $--ml-list-title-color:$--ef-color-primary !default;
 $--ml-list-unpassed-title-color: $--ef-color-error !default;
