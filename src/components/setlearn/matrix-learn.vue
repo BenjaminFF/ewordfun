@@ -168,7 +168,7 @@
               rid:card.rid
             })
           })
-          console.log(this.curCards);
+          console.log(this.set);
           let cur = this.curCards.filter((card) => card.Passed).length;
           let total = this.totalCards.length;
           this.progress = {
@@ -210,6 +210,7 @@
           });
         } else {
           curCard.rmatrix_unpass_count++;
+          this.totalCards.filter((card)=>card.rid==curCard.rid)[0].rmatrix_unpass_count++;
           this.axios.post('/api/v_record/update', {
             v_record: JSON.stringify({rid: curCard.rid, rmatrix_unpass_count: curCard.rmatrix_unpass_count})
           });
@@ -222,6 +223,7 @@
       skipCard(){
         let curCard = this.curCards[this.progress.cur];
         curCard.rmatrix_unpass_count++;
+        this.totalCards.filter((card)=>card.rid==curCard.rid)[0].rmatrix_unpass_count++;
         this.axios.post('/api/v_record/update', {
           v_record: JSON.stringify({rid: curCard.rid, rmatrix_unpass_count: curCard.rmatrix_unpass_count})
         });
@@ -239,6 +241,16 @@
               return card2.rmatrix_unpass_count-card1.rmatrix_unpass_count
             });
             this.totalProgress.percentage = (this.totalProgress.cur / this.totalProgress.total).toFixed(3) * 100;
+            if(stepStateId==3){
+              let sid = this.$route.params.sid;
+              let uid = this.$route.params.uid;
+              let setRecord={
+                sid:sid,
+                uid:uid,
+                rmatrix:this.set.rmatrix+1
+              };
+              this.axios.post('/api/set/updateRecord',{setRecord:JSON.stringify(setRecord)});
+            }
           } else {
             this.progress.percentage = (this.progress.cur / this.progress.total) * 100;
           }

@@ -92,6 +92,7 @@
         this.fetchData();
       },
       async fetchData() {
+        //uid在cookie里面
         await this.axios.get('/api/set/list_of_user').then((res) => {
           res.data.forEach((set,index) => {
             set.isDateVisible = false;
