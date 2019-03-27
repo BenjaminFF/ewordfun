@@ -8,6 +8,7 @@ import helpCenter from '@/components/helpcenter/help-center'
 import setting from '@/components/setting/setting'
 import setLearn from '@/components/setlearn/set-learn'
 import matrixLearn from '@/components/setlearn/matrix-learn'
+import createPuzzle from '@/components/puzzlelearn/create-puzzle'
 
 Vue.use(Router)
 
@@ -57,6 +58,11 @@ const router = new Router({
       path: '/matrixLearn/:uid/:sid',
       name: 'matrixLearn',
       component: matrixLearn
+    },
+    {
+      path:'/createPuzzle/:uid/:sid',
+      name:'createPuzzle',
+      component:createPuzzle
     }
   ]
 });
