@@ -4,7 +4,7 @@
       <div class="cells-container">
         <div style="position: absolute;width: 2rem;height: 2rem;background-color: #42b983;right: 5px;top: -3rem"></div>
         <div class="cell" v-for="cell in cells" :class="{'is-active':cell.isActive}" @click="cellClick(cell)">
-          <el-input maxlength="1" style="width: 100%;height: 100%" v-on:focus="inputFocus" v-model="cell.c" @input="inputChange(cell)"></el-input>
+          <el-input maxlength="1" style="width: 100%;height: 100%" v-on:focus="inputFocus" v-model="cell.c" @input="inputChange(cell)" ref="cells"></el-input>
         </div>
       </div>
     </div>
@@ -44,7 +44,6 @@
         this.cells = cells;
         this.lastCellClick={
           p:-1,
-          state:0    //0 horizontal 1 vertical
         }
       },
       fetchData() {
@@ -63,38 +62,39 @@
         event.target.setSelectionRange(0,1);
       },
       inputChange(cell){
-        if(cell.c!=""){
-          this.cellClick(cell);
-        }
+        console.log(cell);
+        cell.c=cell.c.trim();     //输入空格就清空
+        this.$refs.cells[cell.p].select();
+        this.cellClick(cell);
       },
       cellClick(cell){
         if(cell.c==""){
+          this.lastCellClick.p=-1;           //从没有填充到有填充规定为重新点击
           this.cells.forEach((cell)=>{cell.isActive=false});
           return;
         }
-        let farthestPos=this.getFarthestPos(cell);
-        let activeCells=[];
         let rowSize=Math.sqrt(this.size);
-        if(this.lastCellClick.p==cell.p) {
-          if (this.lastCellClick.state == 0&&farthestPos.bottom-farthestPos.top>rowSize*2) {     //当前是左右激活上下有相邻的cell为填充的
-            this.lastCellClick.state =1;
+        let farthestPos=this.getFarthestPos(cell);
+        let isVerticalFill=(farthestPos.bottom-farthestPos.top>rowSize*2);
+        let isHorizontalFill=(farthestPos.right-farthestPos.left>2);
+        let activeCells=[];
+        if(this.lastCellClick.p==cell.p&&isHorizontalFill&&isVerticalFill) {       //上下左右都有填充才能交换
+          let isHorizontalActive=(this.cells[farthestPos.left+1].isActive&&this.cells[farthestPos.right-1].isActive);
+          if (isHorizontalActive) {
             for(let i=farthestPos.top+rowSize;i<farthestPos.bottom;i+=rowSize){
               activeCells.push(i);
             }
-          }else if(this.lastCellClick.state==1&&farthestPos.right-farthestPos.left>2){
-            this.lastCellClick.state=0;
+          }else {
             for(let i=farthestPos.left+1;i<farthestPos.right;i++){
               activeCells.push(i);
             }
           }
         }else {
-          if(farthestPos.right-farthestPos.left>2){
-            this.lastCellClick.state=0;
+          if(isHorizontalFill){
             for(let i=farthestPos.left+1;i<farthestPos.right;i++){
               activeCells.push(i);
             }
-          }else if(farthestPos.bottom-farthestPos.top>rowSize*2){
-            this.lastCellClick.state =1;
+          }else if(isVerticalFill){
             for(let i=farthestPos.top+rowSize;i<farthestPos.bottom;i+=rowSize){
               activeCells.push(i);
             }
@@ -105,7 +105,6 @@
           activeCells.forEach((pos)=>{this.cells[pos].isActive=true});
         }
         this.lastCellClick.p=cell.p;
-        console.log(activeCells);
       },
       getFarthestPos(cell){             //get the cell's farthest left, right, top, bottom
         let rowSize=Math.sqrt(this.size);
@@ -178,11 +177,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
+    color: gray;
   }
 
   .is-active{
     background-color: lightgrey;
+    transition: background-color ease-in-out .3s;
   }
 </style>
 
@@ -201,10 +201,11 @@
 
   .el-input__inner:focus {
     background-color: #42b983;
+    transition: background-color ease-in-out .3s;
   }
 
   .el-input__inner::selection{
-    color: white;
+    color: gray;
     background-color: transparent;
   }
 </style>
