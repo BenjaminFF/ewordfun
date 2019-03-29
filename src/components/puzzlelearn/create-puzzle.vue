@@ -1,15 +1,26 @@
 <template>
   <div class="m-container">
     <div class="puzzle-container">
-      <div class="cells-container">
+      <div class="cells-container" :style="{'--row':Math.sqrt(size),'--column':Math.sqrt(size)}">
         <div style="position: absolute;width: 2rem;height: 2rem;background-color: #42b983;right: 5px;top: -3rem"></div>
         <div class="cell" v-for="cell in cells" :class="{'is-active':cell.isActive}" @click="cellClick(cell)">
-          <el-input maxlength="1" style="width: 100%;height: 100%" v-on:focus="inputFocus" v-model="cell.c" @input="inputChange(cell)" ref="cells"></el-input>
+          <el-input maxlength="1" style="width: 100%;height: 100%" v-on:focus="inputFocus($event,cell)" v-model="cell.c" @input="inputChange(cell)" ref="cells" v-on:blur="inputBlur"></el-input>
         </div>
       </div>
     </div>
     <div class="list-container">
-
+      <el-scrollbar style="width: 90%;height: 90%;">
+        <el-row justify="center" type="flex" :gutter="20" style="width: 100%">
+          <el-col v-for="cards in groupedCards" :span="Math.floor(24/listCol)" style="display: flex;flex-direction: column">
+            <div v-for="card in cards" style="width: 100%;min-height: 20rem;margin-bottom: 20px;">
+              <div style="width: 100%;height: 100%;background-color: white;padding:2rem;border-radius: 10px;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.11);color: gray">
+                <div style="width: 100%;height: fit-content;text-align: center;padding-bottom: 2rem;font-size: 2rem">{{card.term}}</div>
+                <div style="display: flex;justify-content: center;align-items: center;font-size: 1.5rem">{{card.definition}}</div>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </el-scrollbar>
     </div>
   </div>
 </template>
@@ -22,14 +33,46 @@
         cells: [],
         vocabularies:[],
         cards:[],
-        size:100,
-        lastCellClick:{}
+        size:169,
+        lastCellClick:{},
+        groupedCards:[],
+        listCol:2
       }
     },
     created() {
       this.init();
+      this.fetchData();
+      this.onBindKey();
     },
     methods: {
+      onBindKey(){
+        document.onkeyup=(ev)=>{
+          let cell=this.getFocusCell();
+          console.log(cell);
+          if(ev.key=='ArrowUp'){
+          }
+        }
+      },
+      getFocusCell(){
+        return this.cells.filter((cell)=>cell.focused)[0];
+      },
+      groupCards(cards,groupCount){
+        let groupedCards=[];
+        if(cards.length<=groupCount){
+          cards.forEach((card)=>{
+            groupedCards.push([card]);
+          });
+          return;
+        }
+        for(let i=0;i<groupCount;i++){
+          let subArr=[];
+          for(let j=i;j<cards.length;j+=groupCount){
+            subArr.push(cards[j]);
+          }
+          groupedCards.push(subArr);
+        }
+        return groupedCards;
+      },
       init() {
         let cells = [];
         while (cells.length < this.size) {
@@ -38,7 +81,8 @@
             h: 0,     //horizontal mark,mark 对应card的Id,0代表没有
             v: 0,     //vertical mark
             p: cells.length,
-            isActive:false
+            isActive:false,
+            focused:false
           });
         }
         this.cells = cells;
@@ -55,14 +99,21 @@
             sid: sid
           }
         }).then((res) => {
-
+          this.cards=res.data.vocabularies;
+          this.groupedCards=this.groupCards(this.cards,this.listCol);
         });
       },
-      inputFocus(event) {
+      inputFocus(event,cell) {
         event.target.setSelectionRange(0,1);
+        cell.focused=true;
+      },
+      inputBlur(){
+        this.cells.forEach((cell)=>{
+          cell.isActive=false;
+          cell.focused=false;
+        })
       },
       inputChange(cell){
-        console.log(cell);
         cell.c=cell.c.trim();     //输入空格就清空
         this.$refs.cells[cell.p].select();
         this.cellClick(cell);
@@ -141,25 +192,24 @@
     top: 0;
     display: flex;
     align-items: center;
+    justify-content: space-evenly;
   }
 
   .puzzle-container {
-    flex: 7 0 0;
     height: 100%;
     display: flex;
-    justify-content: center;
     align-items: center;
   }
 
   .list-container {
-    flex: 3 0 0;
     height: 100%;
+    display: flex;
+    align-items: center;
+    width: 30%;
   }
 
   .cells-container {
-    --row: 10;
-    --column: 10;
-    --size: 5.5rem;
+    --size: 4.8rem;
     width: fit-content;
     height: fit-content;
     display: grid;
@@ -183,6 +233,10 @@
   .is-active{
     background-color: lightgrey;
     transition: background-color ease-in-out .3s;
+  }
+
+  .col-box{
+
   }
 </style>
 

@@ -16,7 +16,8 @@
     "vue": "^2.5.2",
     "vue-axios": "^2.1.4",
     "vue-free-transform": "^1.0.11",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vue-waterfall": "^1.0.6"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
