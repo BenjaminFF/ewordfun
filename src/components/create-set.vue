@@ -45,14 +45,14 @@
         width="20%">
         <el-form :rules="rules" :model="set" ref="createSetForm">
           <el-form-item prop="name">
-            <el-input :placeholder="$t('createDialog.name')" style="font-size: 1.5rem" v-model="set.name"></el-input>
+            <el-input :placeholder="$t('createDialog.name')" style="font-size: 1.5rem" v-model="set.name" maxlength="32"></el-input>
+          </el-form-item>
+          <el-form-item prop="intro">
+            <el-input type="textarea" min-row resize="none" :autosize="{ minRows: 8, maxRows: 8 }" :placeholder="$t('createDialog.introduction')"
+                      style="font-size: 1.2rem;margin-top: 1rem" v-model="set.intro"  maxlength="200"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-input type="textarea" min-row resize="none" :autosize="{ minRows: 4, maxRows: 6 }" :placeholder="$t('createDialog.introduction')"
-                      style="font-size: 1.2rem;margin-top: 2rem" v-model="set.intro"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button style="width: 100%;margin-top: 4rem;" type="primary" @click="submitForm('createSetForm')">{{$t('createDialog.submit')}}</el-button>
+            <el-button style="width: 100%;margin-top: 2rem;" type="primary" @click="submitForm('createSetForm')">{{$t('createDialog.submit')}}</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -118,8 +118,8 @@
         }
         this.rules={
           name:[
-            { required: true, message: this.$t('createDialog.nameEmpty'), trigger: 'blur' }
-          ]
+            { required: true, message: this.$t('createDialog.nameEmpty'), trigger: 'blur' },
+            ]
         }
         let cards=[];
         let tempData=localStorage.getItem("createSet_tempData");
