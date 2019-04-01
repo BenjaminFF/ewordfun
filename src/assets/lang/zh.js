@@ -35,8 +35,8 @@ module.exports = {
     submit: '创建',
   },
   createSet: {
-    termEmpty: '第%{row}行单词为空，请给它填上!',
-    defEmpty: '第%{row}行定义为空，请给它填上!',
+    termLenError: '第%{row}行单词为字数有误，请输入1-32个字符!',
+    defLenError: '第%{row}行定义为字数有误，请输入1-1024个字符!',
     setLength: '一个单词集至少包含3个卡片哦!',
     termHint: '单词定义...',
     definitionHint: '解释...',

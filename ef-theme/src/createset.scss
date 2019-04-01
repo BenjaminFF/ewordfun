@@ -7,7 +7,7 @@
   position: fixed;
   left: 0;
   top: 0;
-  background-color: $--ef-color-bg;
+  background-color: $--ef-color-lighter;
 
   @include e(list-container){
     width: 100%;
@@ -46,6 +46,21 @@
       opacity: 1;
       cursor: pointer;
     }
+  }
+}
+
+@include b(cs-dialog){
+  min-width: 30rem;
+  border-radius: 10px;
+
+  & .el-dialog__title{
+    font-size: 1.8rem;
+    color: $--ef-color-primary;
+  }
+
+  & .el-dialog__close{
+    font-size: 1.8rem;
+    color: $--ef-color-mid-gray;
   }
 }
 

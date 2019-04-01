@@ -1,6 +1,6 @@
 <template>
-  <transition enter-active-class="animated slideInDown" leave-active-class="animated fadeOut faster" v-on:after-enter="afterEnter">
-    <div class="l-create-set">
+  <transition enter-active-class="animated slideInDown" leave-active-class="animated slideOutUp" v-on:after-enter="afterEnter">
+    <div class="l-create-set" v-if="createSetVisible">
       <div class="l-create-set__list-container">
         <anim-list ref="animList" :items="cards" style="width: 100%;height: 75%;margin-top: 5%;">
           <div class="l-create-set-card" v-for="(card,index) in cards" :key="card.key" :class="{'animated bounceInLeft':card.isInitialCard}">
@@ -41,7 +41,7 @@
         :center="true"
         :visible.sync="dialogVisible"
         :modal-append-to-body="false"
-        :custom-class="'createSetDialog'"
+        :custom-class="'cs-dialog'"
         width="20%">
         <el-form :rules="rules" :model="set" ref="createSetForm">
           <el-form-item prop="name">
@@ -73,10 +73,42 @@
         confirmHovered: false,
         dialogVisible: false,
         rules:{},
+        createSetVisible:false
       }
     },
     created() {
-      //this.init();
+      this.createSetVisible=false;
+      setTimeout(()=>{
+        this.createSetVisible=true;
+      });
+      //close or flush browser save the data to localStorage
+      window.onbeforeunload = (e)=> {
+        if(this.$route.path=='/createSet'){
+          this.saveTempData();
+        }else {
+          window.onbeforeunload=null;
+        }
+      };
+      //offline to on line reload createSet
+      window.addEventListener('online', ()=>{
+        this.createSetVisible=false;
+        setTimeout(()=>{
+          this.createSetVisible=true;
+        });
+      });
+      //save the data to localStorage when it's offline
+      window.addEventListener('offline', ()=>{
+        this.saveTempData();
+      });
+    },
+    watch:{
+      dialogVisible(){
+        if(!this.dialogVisible){
+          setTimeout(()=>{
+            this.$refs.createSetForm.clearValidate();
+          },100);
+        }
+      }
     },
     methods: {
       init() {
@@ -90,7 +122,34 @@
           ]
         }
         let cards=[];
-        let card1 = {
+        let tempData=localStorage.getItem("createSet_tempData");
+        console.log(tempData);
+        if(tempData!=null){
+          let tempVocabularies=JSON.parse(tempData);
+          tempVocabularies.forEach((vocabulary)=>{
+            cards.push({
+              key:Date.now(),
+              term: vocabulary.term,
+              definition: vocabulary.definition,
+              hovered: false,
+              addVisible: false,
+              backgroundColor: "",
+              isInitialCard:true
+            })
+          })
+        }
+        while (cards.length<3){
+          cards.push({
+            key:Date.now(),
+            term: "",
+            definition: "",
+            hovered: false,
+            addVisible: false,
+            backgroundColor: "",
+            isInitialCard:true,
+          });
+        }
+        cards.push({                 //最后一个为add Set
           key:Date.now(),
           term: "",
           definition: "",
@@ -98,33 +157,7 @@
           addVisible: false,
           backgroundColor: "",
           isInitialCard:true,
-        }
-        let card2 = {
-          key:Date.now(),
-          term: "",
-          definition: "",
-          hovered: false,
-          addVisible: false,
-          backgroundColor: "",
-          isInitialCard:true,
-        }
-        let card3 = {
-          term: "",
-          definition: "",
-          hovered: false,
-          addVisible: false,
-          backgroundColor: "",
-          isInitialCard:true
-        }
-        let card4 = {
-          term: "",
-          definition: "",
-          hovered: false,
-          addVisible: false,
-          backgroundColor: "",
-          isInitialCard:true
-        }
-        cards.push(card1, card2, card3,card4);
+        });
         cards.forEach((card,index)=>{
           card.backgroundColor=this.getSpecialColor();
           if(index!=0){
@@ -147,6 +180,7 @@
       },
       afterEnter(){
         this.init();
+        console.log('afterEnter');
       },
       delCard(index) {
         this.$refs.animList.delItem(index);
@@ -171,22 +205,22 @@
 
       openDialog() {
         let cards = [...this.cards];
-        cards.pop();
+        cards.pop();                     //最后一个单词卡无效
         for (let [index, card] of cards.entries()) {
-          if (card.term == "") {
+          if (card.term == ""||card.term.length>32) {
             this.$message({
-                message: this.$t('createSet.termEmpty', {row: index + 1}),
-                duration: 1500,
+                message: this.$t('createSet.termLenError', {row: index + 1}),
+                duration: 2000,
                 type: 'error'
               }
             );
             this.$refs['termInput'][index].focus();
             return;
           }
-          if (card.definition == "") {
+          if (card.definition == ""||card.definition.length>1024) {
             this.$message({
-                message: this.$t('createSet.defEmpty', {row: index + 1}),
-                duration: 1500,
+                message: this.$t('createSet.defLenError', {row: index + 1}),
+                duration: 2000,
                 type: 'error'
               }
             );
@@ -196,6 +230,7 @@
         }
         this.dialogVisible = true;
       },
+      //when submit success, clear localData
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
@@ -206,47 +241,33 @@
               vocabularies:JSON.stringify(cards),
             }).then((res)=>{
               this.$router.go(-1);
+              localStorage.removeItem("createSet_tempData");
             });
           } else {
             return false;
           }
         });
       },
+      //save the data when click return button
       createSetReturn(){
         this.$router.go(-1);
+        this.saveTempData();
+      },
+      saveTempData(){
+        let tempVocabularies=[];
+        this.cards.forEach((card)=>{
+          if(card.term!=""||card.definition!=""){
+            tempVocabularies.push({
+              term:card.term,
+              definition:card.definition
+            })
+          }
+        })
+        if(tempVocabularies.length!=0){
+          localStorage.setItem("createSet_tempData",JSON.stringify(tempVocabularies));
+        }
       }
     }
   }
 </script>
 
-<style scoped>
-  .confirm-fab {
-    width: 4rem;
-    height: 4rem;
-    box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.16);
-    border-radius: 3rem;
-    position: absolute;
-    right: 5%;
-    bottom: 5%;
-    background-color: black;
-    text-align: center;
-    color: white;
-    line-height: 4rem;
-    font-size: 1.5rem;
-    cursor: pointer;
-  }
-
-  .create-set-return{
-
-  }
-</style>
-
-<style>
-  .createSetDialog{
-    min-width: 30rem;
-  }
-
-  .createSetDialog .el-dialog__title{
-    font-size: 1.8rem;
-  }
-</style>

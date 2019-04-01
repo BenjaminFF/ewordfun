@@ -38,8 +38,8 @@ module.exports = {
     submit:'CREATE',
   },
   createSet:{
-    termEmpty:'term is empty in the %{row} row,please fill it up!',
-    defEmpty:'row definition in the %{row} row,please fill it up!',
+    termLenError:'term length is valid in the %{row} row,please check out(length limit is 1-32)!',
+    defLenError:'row definition length valid in the %{row} row,please check out(length limit is 1-1024)!',
     setLength:'A Set at least contains 3 cards!',
     termHint:'term...',
     definitionHint:'definition...',
