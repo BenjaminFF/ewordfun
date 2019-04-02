@@ -390,7 +390,7 @@
       },
       //str.len<=26
       splitString(str) {
-        let words = str.split(" ");
+        let words = str.split(" ");           //考虑到空格的情况，将str先按空格拆分
         let spaceCount = words.length - 1;
         if (str.length - spaceCount <= 6) {
           return str.split("");
@@ -403,7 +403,7 @@
           words.forEach((word, index) => {
             let pos = 0;
             while (pos < word.length && splitCount != 0) {
-              let charCount = Math.floor(Math.random() * 3) + minChars;
+              let charCount = Math.floor(Math.random() * 4) + minChars;
               let start = pos;
               let end = pos + charCount >= word.length ? word.length : pos + charCount;
               pos += charCount;
@@ -414,7 +414,7 @@
               cells.push(" ");
             }
           });
-          if (cells.join("") == str && cells[cells.length - 1].length <= 3) {               //没有提前spilt并且split结束后的最后一个cell的字符数<=3
+          if (cells.join("") == str && cells[cells.length - 1].length <= minChars+2) {               //没有提前spilt并且split结束后的最后一个cell的字符数<=minChars+2
             return cells;
           }
         }

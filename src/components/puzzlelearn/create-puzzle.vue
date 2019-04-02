@@ -9,13 +9,14 @@
       </div>
     </div>
     <div class="list-container">
-      <el-scrollbar style="width: 90%;height: 90%;">
-        <el-row justify="center" type="flex" :gutter="20" style="width: 100%">
+      <el-scrollbar style="width: 100%;height: 90%;">
+        <el-row justify="center" type="flex" :gutter="20" style="width: 100%;padding-left: 10px;padding-right: 10px">
           <el-col v-for="cards in groupedCards" :span="Math.floor(24/listCol)" style="display: flex;flex-direction: column">
-            <div v-for="card in cards" style="width: 100%;min-height: 20rem;margin-bottom: 20px;">
-              <div style="width: 100%;height: 100%;background-color: white;padding:2rem;border-radius: 10px;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.11);color: gray">
-                <div style="width: 100%;height: fit-content;text-align: center;padding-bottom: 2rem;font-size: 2rem">{{card.term}}</div>
-                <div style="display: flex;justify-content: center;align-items: center;font-size: 1.5rem">{{card.definition}}</div>
+            <div v-for="card in cards" style="width: 100%;min-height: 12rem;margin-bottom: 20px;user-select: none;cursor: pointer;position: relative">
+              <div style="width: 100%;height: 100%;background-color: white;padding:2rem;border-radius: 10px;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);color: gray;margin: 10px">
+                <div style="width: 100%;height: fit-content;text-align: center;padding-bottom: 2rem;font-size: 1.5rem">{{card.term}}</div>
+                <div style="display: flex;justify-content: center;align-items: center;font-size: 1.2rem">{{card.definition}}</div>
+                <div style="position: absolute;right: 50%;bottom: 1rem;text-align: center;transform: translateX(50%)">{{card.vid}}</div>
               </div>
             </div>
           </el-col>
@@ -33,10 +34,10 @@
         cells: [],
         vocabularies:[],
         cards:[],
-        size:169,
+        size:256,
         lastCellClick:{},
         groupedCards:[],
-        listCol:2
+        listCol:3
       }
     },
     created() {
@@ -49,12 +50,33 @@
         document.onkeyup=(ev)=>{
           let cell=this.getFocusCell();
           console.log(cell);
-          if(ev.key=='ArrowUp'){
+          if(cell!=undefined){
+            this.moveCell(cell.p,ev.key);
           }
         }
       },
+
       getFocusCell(){
         return this.cells.filter((cell)=>cell.focused)[0];
+      },
+      moveCell(pos,eventKey){
+        let rowSize=Math.sqrt(this.size);
+        let pos_of_row=Math.floor(pos/rowSize);
+        let pos_of_col=pos%rowSize;
+        switch (eventKey) {
+          case "ArrowUp":
+            pos_of_row==0?this.$refs.cells[this.size-rowSize+pos%rowSize].focus():this.$refs.cells[pos-rowSize].focus();
+            break;
+          case "ArrowDown":
+            pos_of_row==rowSize-1?this.$refs.cells[pos%rowSize].focus():this.$refs.cells[pos+rowSize].focus();
+            break;
+          case "ArrowLeft":
+            pos_of_col==0?this.$refs.cells[pos+rowSize-1].focus():this.$refs.cells[pos-1].focus();
+            break;
+          case "ArrowRight":
+            pos_of_col==rowSize-1?this.$refs.cells[pos-rowSize+1].focus():this.$refs.cells[pos+1].focus();
+            break;
+        }
       },
       groupCards(cards,groupCount){
         let groupedCards=[];
@@ -99,7 +121,9 @@
             sid: sid
           }
         }).then((res) => {
-          this.cards=res.data.vocabularies;
+          this.cards=res.data.vocabularies.sort((c1,c2)=>{
+            return c1.vid-c2.vid
+          });
           this.groupedCards=this.groupCards(this.cards,this.listCol);
         });
       },
@@ -205,11 +229,11 @@
     height: 100%;
     display: flex;
     align-items: center;
-    width: 30%;
+    width: 40%;
   }
 
   .cells-container {
-    --size: 4.8rem;
+    --size: 3.8rem;
     width: fit-content;
     height: fit-content;
     display: grid;
@@ -220,9 +244,9 @@
 
   .cell {
     background-color: white;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.11);
-    border-radius: 5px;
-    margin: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.10);
+    border-radius: 3px;
+    margin: 3px;
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -232,7 +256,7 @@
 
   .is-active{
     background-color: lightgrey;
-    transition: background-color ease-in-out .3s;
+    transition: background-color ease-in-out .2s;
   }
 
   .col-box{
