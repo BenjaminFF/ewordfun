@@ -4,7 +4,7 @@
       <div class="cells-container" :style="{'--row':Math.sqrt(size),'--column':Math.sqrt(size)}">
         <div style="position: absolute;width: 2rem;height: 2rem;background-color: #42b983;right: 5px;top: -3rem"></div>
         <div class="cell" v-for="cell in cells" :class="{'is-active':cell.isActive}" @click="cellClick(cell)">
-          <el-input maxlength="1" style="width: 100%;height: 100%" v-on:focus="inputFocus($event,cell)" v-model="cell.c" @input="inputChange(cell)" ref="cells" v-on:blur="inputBlur"></el-input>
+          <el-input maxlength="1" style="width: 100%;height: 100%" v-on:focus="inputFocus($event,cell)" v-model="cell.c" ref="cells" @input="inputChange(cell)"></el-input>
         </div>
       </div>
     </div>
@@ -37,7 +37,11 @@
         size:256,
         lastCellClick:{},
         groupedCards:[],
-        listCol:3
+        listCol:3,
+        direction:{},
+        lastInputChar:"",
+        isKeyBoardFocus:false,           //key board event invoke focus
+        curCell:{}             //for Arrow move
       }
     },
     created() {
@@ -47,17 +51,10 @@
     },
     methods: {
       onBindKey(){
-        document.onkeyup=(ev)=>{
-          let cell=this.getFocusCell();
-          console.log(cell);
-          if(cell!=undefined){
-            this.moveCell(cell.p,ev.key);
-          }
+        document.onkeydown=(ev)=>{
+          this.isKeyBoardFocus=true;
+          this.moveCell(this.curCell.p,ev.key);
         }
-      },
-
-      getFocusCell(){
-        return this.cells.filter((cell)=>cell.focused)[0];
       },
       moveCell(pos,eventKey){
         let rowSize=Math.sqrt(this.size);
@@ -97,6 +94,10 @@
       },
       init() {
         let cells = [];
+        this.direction={
+          VERTICAL:'vertical',
+          HORIZONTAL:'horizontal'
+        }
         while (cells.length < this.size) {
           cells.push({
             c: "",     //char
@@ -104,10 +105,10 @@
             v: 0,     //vertical mark
             p: cells.length,
             isActive:false,
-            focused:false
           });
         }
         this.cells = cells;
+        this.curCell=this.cells[Math.floor(Math.random()*this.size)];
         this.lastCellClick={
           p:-1,
         }
@@ -128,21 +129,24 @@
         });
       },
       inputFocus(event,cell) {
-        event.target.setSelectionRange(0,1);
-        cell.focused=true;
-      },
-      inputBlur(){
-        this.cells.forEach((cell)=>{
-          cell.isActive=false;
-          cell.focused=false;
-        })
+        this.curCell=cell;
+        if(this.isKeyBoardFocus){
+          console.log('inputFocus KeyBoardFocus');
+          this.cellClick(cell);
+          this.isKeyBoardFocus=false;
+        }
+        this.$refs.cells[cell.p].select();
       },
       inputChange(cell){
-        cell.c=cell.c.trim();     //输入空格就清空
         this.$refs.cells[cell.p].select();
-        this.cellClick(cell);
+        if(this.lastInputChar==""){
+          this.cellClick(cell);
+        }
+        this.lastInputChar=cell.c;
       },
       cellClick(cell){
+        console.log('cellClick');
+        this.lastInputChar=cell.c;
         if(cell.c==""){
           this.lastCellClick.p=-1;           //从没有填充到有填充规定为重新点击
           this.cells.forEach((cell)=>{cell.isActive=false});
@@ -152,36 +156,32 @@
         let farthestPos=this.getFarthestPos(cell);
         let isVerticalFill=(farthestPos.bottom-farthestPos.top>rowSize*2);
         let isHorizontalFill=(farthestPos.right-farthestPos.left>2);
-        let activeCells=[];
         if(this.lastCellClick.p==cell.p&&isHorizontalFill&&isVerticalFill) {       //上下左右都有填充才能交换
           let isHorizontalActive=(this.cells[farthestPos.left+1].isActive&&this.cells[farthestPos.right-1].isActive);
-          if (isHorizontalActive) {
-            for(let i=farthestPos.top+rowSize;i<farthestPos.bottom;i+=rowSize){
-              activeCells.push(i);
-            }
-          }else {
-            for(let i=farthestPos.left+1;i<farthestPos.right;i++){
-              activeCells.push(i);
-            }
-          }
-        }else {
-          if(isHorizontalFill){
-            for(let i=farthestPos.left+1;i<farthestPos.right;i++){
-              activeCells.push(i);
-            }
-          }else if(isVerticalFill){
-            for(let i=farthestPos.top+rowSize;i<farthestPos.bottom;i+=rowSize){
-              activeCells.push(i);
-            }
-          }
-        }
-        if(activeCells.length!=0){       //状态变化了
           this.cells.forEach((cell)=>{cell.isActive=false});
-          activeCells.forEach((pos)=>{this.cells[pos].isActive=true});
+          this.activeCells(cell,isHorizontalActive==true?this.direction.VERTICAL:this.direction.HORIZONTAL);
+        }else {
+          if(isHorizontalFill||isVerticalFill){
+            this.cells.forEach((cell)=>{cell.isActive=false});
+            this.activeCells(cell,isHorizontalFill?this.direction.HORIZONTAL:this.direction.VERTICAL);
+          }
         }
         this.lastCellClick.p=cell.p;
       },
-      getFarthestPos(cell){             //get the cell's farthest left, right, top, bottom
+      activeCells(cell,direction){              //cells near focused and filled cell can be active
+        let farthestPos=this.getFarthestPos(cell);
+        let rowSize=Math.sqrt(this.size);
+        if(direction==this.direction.VERTICAL){
+          for(let i=farthestPos.top+rowSize;i<farthestPos.bottom;i+=rowSize){
+            this.cells[i].isActive=true;
+          }
+        }else {
+          for(let i=farthestPos.left+1;i<farthestPos.right;i++){
+            this.cells[i].isActive=true;
+          }
+        }
+      },
+      getFarthestPos(cell){             //get the cell's farthest left, right, top, bottom.
         let rowSize=Math.sqrt(this.size);
         let pos_of_row=Math.floor(cell.p/rowSize);
         let pos_of_col=cell.p%rowSize;
@@ -256,7 +256,6 @@
 
   .is-active{
     background-color: lightgrey;
-    transition: background-color ease-in-out .2s;
   }
 
   .col-box{
@@ -279,7 +278,6 @@
 
   .el-input__inner:focus {
     background-color: #42b983;
-    transition: background-color ease-in-out .3s;
   }
 
   .el-input__inner::selection{

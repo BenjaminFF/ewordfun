@@ -388,7 +388,7 @@
         chars[midPos] = randomChar;
         return chars.join("");
       },
-      //str.len<=26
+      //str.len<=32
       splitString(str) {
         let words = str.split(" ");           //考虑到空格的情况，将str先按空格拆分
         let spaceCount = words.length - 1;
