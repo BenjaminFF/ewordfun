@@ -52,6 +52,7 @@
     methods: {
       onBindKey(){
         document.onkeydown=(ev)=>{
+          console.log(ev.key);
           this.isKeyBoardFocus=true;
           this.moveCell(this.curCell.p,ev.key);
         }
@@ -130,16 +131,18 @@
       },
       inputFocus(event,cell) {
         this.curCell=cell;
-        if(this.isKeyBoardFocus){
+        if(this.isKeyBoardFocus) {
           console.log('inputFocus KeyBoardFocus');
           this.cellClick(cell);
-          this.isKeyBoardFocus=false;
+          this.isKeyBoardFocus = false;
         }
-        this.$refs.cells[cell.p].select();
+        this.$nextTick(()=>{
+          this.$refs.cells[cell.p].select();
+        });
       },
       inputChange(cell){
         this.$refs.cells[cell.p].select();
-        if(this.lastInputChar==""){
+        if(this.lastInputChar==""||this.lastInputChar==cell.c){
           this.cellClick(cell);
         }
         this.lastInputChar=cell.c;
