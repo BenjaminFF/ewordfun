@@ -5,6 +5,8 @@
         <div style="position: absolute;width: 2rem;height: 2rem;background-color: #42b983;right: 5px;top: -3rem"></div>
         <div class="cell" v-for="cell in cells" :class="{'is-active':cell.isActive}" @click="cellClick(cell)">
           <el-input maxlength="1" style="width: 100%;height: 100%" v-on:focus="inputFocus($event,cell)" v-model="cell.c" ref="cells" @input="inputChange(cell)"></el-input>
+          <div style="position: absolute;left: 0.1rem;top: 0.1rem">{{cell.h}}</div>
+          <div style="position: absolute;left: 0.1rem;bottom: 0.1rem">{{cell.v}}</div>
         </div>
       </div>
     </div>
@@ -12,11 +14,11 @@
       <el-scrollbar style="width: 100%;height: 90%;">
         <el-row justify="center" type="flex" :gutter="20" style="width: 100%;padding-left: 10px;padding-right: 10px">
           <el-col v-for="cards in groupedCards" :span="Math.floor(24/listCol)" style="display: flex;flex-direction: column">
-            <div v-for="card in cards" style="width: 100%;min-height: 12rem;margin-bottom: 20px;user-select: none;cursor: pointer;position: relative">
+            <div v-for="card in cards" style="width: 100%;min-height: 12rem;margin-bottom: 20px;user-select: none;cursor: pointer;position: relative" @click="markCells(card.index)">
               <div style="width: 100%;height: 100%;background-color: white;padding:2rem;border-radius: 10px;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);color: gray;margin: 10px">
                 <div style="width: 100%;height: fit-content;text-align: center;padding-bottom: 2rem;font-size: 1.5rem">{{card.term}}</div>
                 <div style="display: flex;justify-content: center;align-items: center;font-size: 1.2rem">{{card.definition}}</div>
-                <div style="position: absolute;right: 50%;bottom: 1rem;text-align: center;transform: translateX(50%)">{{card.vid}}</div>
+                <div style="position: absolute;right: 50%;bottom: 1rem;text-align: center;transform: translateX(50%)" :class="{'is-selected':card.selected}">{{card.index}}</div>
               </div>
             </div>
           </el-col>
@@ -38,7 +40,7 @@
         lastCellClick:{},
         groupedCards:[],
         listCol:3,
-        direction:{},
+        orientation:{},
         lastInputChar:"",
         isKeyBoardFocus:false,           //key board event invoke focus
         curCell:{}             //for Arrow move
@@ -95,15 +97,15 @@
       },
       init() {
         let cells = [];
-        this.direction={
+        this.orientation={
           VERTICAL:'vertical',
           HORIZONTAL:'horizontal'
         }
         while (cells.length < this.size) {
           cells.push({
             c: "",     //char
-            h: 0,     //horizontal mark,mark 对应card的Id,0代表没有
-            v: 0,     //vertical mark
+            h: "",     //horizontal mark,mark 对应card的Id,0代表没有
+            v: "",     //vertical mark
             p: cells.length,
             isActive:false,
           });
@@ -126,13 +128,13 @@
           this.cards=res.data.vocabularies.sort((c1,c2)=>{
             return c1.vid-c2.vid
           });
+          this.cards.forEach((card,index)=>{card.index=index;card.selected=false});
           this.groupedCards=this.groupCards(this.cards,this.listCol);
         });
       },
       inputFocus(event,cell) {
         this.curCell=cell;
         if(this.isKeyBoardFocus) {
-          console.log('inputFocus KeyBoardFocus');
           this.cellClick(cell);
           this.isKeyBoardFocus = false;
         }
@@ -148,7 +150,6 @@
         this.lastInputChar=cell.c;
       },
       cellClick(cell){
-        console.log('cellClick');
         this.lastInputChar=cell.c;
         if(cell.c==""){
           this.lastCellClick.p=-1;           //从没有填充到有填充规定为重新点击
@@ -162,27 +163,71 @@
         if(this.lastCellClick.p==cell.p&&isHorizontalFill&&isVerticalFill) {       //上下左右都有填充才能交换
           let isHorizontalActive=(this.cells[farthestPos.left+1].isActive&&this.cells[farthestPos.right-1].isActive);
           this.cells.forEach((cell)=>{cell.isActive=false});
-          this.activeCells(cell,isHorizontalActive==true?this.direction.VERTICAL:this.direction.HORIZONTAL);
+          this.activeCells(cell,isHorizontalActive==true?this.orientation.VERTICAL:this.orientation.HORIZONTAL);
         }else {
           if(isHorizontalFill||isVerticalFill){
             this.cells.forEach((cell)=>{cell.isActive=false});
-            this.activeCells(cell,isHorizontalFill?this.direction.HORIZONTAL:this.direction.VERTICAL);
+            this.activeCells(cell,isHorizontalFill?this.orientation.HORIZONTAL:this.orientation.VERTICAL);
           }
         }
         this.lastCellClick.p=cell.p;
       },
-      activeCells(cell,direction){              //cells near focused and filled cell can be active
+      activeCells(cell,orientation){              //cells near focused and filled cell can be active
         let farthestPos=this.getFarthestPos(cell);
         let rowSize=Math.sqrt(this.size);
-        if(direction==this.direction.VERTICAL){
+        let activeCells=[];
+        let markedIndexes=[];
+        if(orientation==this.orientation.VERTICAL){
           for(let i=farthestPos.top+rowSize;i<farthestPos.bottom;i+=rowSize){
             this.cells[i].isActive=true;
+            activeCells.push(this.cells[i]);
+            this.cells[i].v!=""&&markedIndexes.find((markedIndex)=>markedIndex==this.cells[i].v)==undefined?markedIndexes.push(this.cells[i].v):null;
           }
         }else {
           for(let i=farthestPos.left+1;i<farthestPos.right;i++){
             this.cells[i].isActive=true;
+            activeCells.push(this.cells[i]);
+            this.cells[i].h!=""&&markedIndexes.find((markedIndex)=>markedIndex==this.cells[i].h)==undefined?markedIndexes.push(this.cells[i].h):null;
           }
         }
+        if(markedIndexes.length==2){
+          activeCells.forEach((cell)=>{
+            orientation==this.orientation.VERTICAL?cell.v="":cell.h="";
+          });
+        }else if(markedIndexes.length==1){
+          activeCells.forEach((cell)=>{
+            orientation==this.orientation.VERTICAL?cell.v=markedIndexes[0]:cell.h=markedIndexes[0];
+          });
+        }
+      },
+      updateCards(){
+        let markedIndexes=[];
+        this.cells.forEach((cell)=>{
+          cell.h!=""?markedIndexes.push(cell.h):null;
+          cell.v!=""?markedIndexes.push(cell.v):null;
+        });
+        this.cards.forEach((card)=>{
+          markedIndexes.find((markIndex)=>markIndex==card.index)!=undefined?card.selected=true:card.selected=false;
+        });
+      },
+      markCells(markIndex){
+        let activedCells=[];
+        let markedIndexes=[];
+        this.cells.forEach((cell)=>{
+          cell.isActive?activedCells.push(cell):null;
+        });
+        if(activedCells.length<=1){
+          return;
+        }
+        this.cells.forEach((cell)=>{
+          cell.h==markIndex?cell.h="":null;  //之前有cell标记为该index的就清除它的index
+          cell.v==markIndex?cell.v="":null;
+        });
+        let isHorizontal=(activedCells[1].p-activedCells[0].p==1);
+        activedCells.forEach((cell)=>{
+          isHorizontal?cell.h=markIndex:cell.v=markIndex;
+        });
+        this.updateCards(markedIndexes);
       },
       getFarthestPos(cell){             //get the cell's farthest left, right, top, bottom.
         let rowSize=Math.sqrt(this.size);
@@ -255,10 +300,15 @@
     justify-content: center;
     align-items: center;
     color: gray;
+    position: relative;
   }
 
   .is-active{
     background-color: lightgrey;
+  }
+
+  .is-selected{
+    color: black;
   }
 
   .col-box{
