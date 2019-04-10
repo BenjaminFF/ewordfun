@@ -6,8 +6,8 @@
         <div class="cell" v-for="cell in cells" :class="{'is-active':cell.isActive}" @click="cellClick(cell)">
           <el-input maxlength="1" style="width: 100%;height: 100%" v-on:focus="inputFocus($event,cell)" v-model="cell.c"
                     ref="cells" @input="inputChange(cell)"></el-input>
-          <div style="position: absolute;left: 0.1rem;top: 0.1rem">{{cell.h}}</div>
-          <div style="position: absolute;left: 0.1rem;bottom: 0.1rem">{{cell.v}}</div>
+          <div style="position: absolute;left: 0.1rem;top: 0.1rem">{{cell.h!=0?cell.h:""}}</div>
+          <div style="position: absolute;left: 0.1rem;bottom: 0.1rem">{{cell.v!=0?cell.v:""}}</div>
         </div>
       </div>
     </div>
@@ -114,8 +114,8 @@
         while (cells.length < this.size) {
           cells.push({
             c: "",     //char
-            h: "",     //horizontal mark,mark 对应card的Id,-1代表没有
-            v: "",     //vertical mark
+            h: 0,     //horizontal mark,mark 对应card的Id,0代表没有
+            v: 0,     //vertical mark
             p: cells.length,
             isActive: false,
           });
@@ -213,10 +213,9 @@
       updateCards() {
         let markedIndexes = [];
         this.cells.forEach((cell) => {
-          cell.h !== "" ? markedIndexes.push(cell.h) : null;
-          cell.v !== "" ? markedIndexes.push(cell.v) : null;
+          cell.h !== 0 ? markedIndexes.push(cell.h) : null;
+          cell.v !== 0 ? markedIndexes.push(cell.v) : null;
         });
-        console.log(markedIndexes);
         this.cards.forEach((card) => {
           markedIndexes.find((markIndex) => markIndex == card.index) != undefined ? card.selected = true : card.selected = false;
         });
@@ -226,16 +225,16 @@
         let cells = this.cells;
         for (let i = rowSize * row; i < rowSize * (row + 1); i++) {     //remove
           if (cells[i].c == "") {                  //如果没有填充，就清除标记
-            cells[i].h = "";
-            cells[i].v = "";
+            cells[i].h = 0;
+            cells[i].v = 0;
           } else {
             let leftCell = (i == rowSize * row) ? null : cells[i - 1];
-            if (leftCell != null && leftCell.h != "" && leftCell.c != "") {
+            if (leftCell != null && leftCell.h != 0 && leftCell.c != "") {
               cells[i].h = leftCell.h;
             } else {
               let j = i + 1;
               while (j < rowSize * (row + 1) && cells[j].c != "") {
-                if (cells[j].h != "") {
+                if (cells[j].h != 0) {
                   cells[i].h = cells[j].h;
                   break;
                 }
@@ -247,16 +246,16 @@
         let markedIndexes = [];
         for (let i = rowSize * row; i < rowSize * (row + 1); i++) {                 //处理删除某个填充字符后，重复填充的问题
           if (cells[i].c != "") {
-            markedIndexes.find((mIndex) => mIndex == cells[i].h) != undefined ? cells[i].h = "" : null;
+            markedIndexes.find((mIndex) => mIndex == cells[i].h) != undefined ? cells[i].h = 0 : null;
           } else {
-            (i != rowSize * row && cells[i - 1].h != "") ? markedIndexes.push(cells[i - 1].h) : null;
+            (i != rowSize * row && cells[i - 1].h != 0) ? markedIndexes.push(cells[i - 1].h) : null;
           }
         }
 
         for (let i = rowSize * row; i < rowSize * (row + 1); i++) {                 //处理孤立的又标注了的cell
           let isLeftEmpty = (i == rowSize * row || cells[i - 1].c == "");
           let isRightEmpty = (i == rowSize * (row + 1) - 1 || cells[i + 1].c == "");
-          (isLeftEmpty && isRightEmpty) ? cells[i].h = "" : null;
+          (isLeftEmpty && isRightEmpty) ? cells[i].h = 0 : null;
         }
       },
       updateColMarks(col) {
@@ -265,16 +264,16 @@
         for (let i = col; i <= rowSize * (rowSize - 1) + col; i += rowSize) {
           console.log(i);
           if (cells[i].c == "") {                  //如果没有填充，就清除标记
-            cells[i].h = "";
-            cells[i].v = "";
+            cells[i].h = 0;
+            cells[i].v = 0;
           } else {
             let topCell = (i == col) ? null : cells[i - rowSize];
-            if (topCell != null && topCell.v != "" && topCell.c != "") {
+            if (topCell != null && topCell.v != 0 && topCell.c != "") {
               cells[i].v = topCell.v;
             } else {
               let j = i + rowSize;
               while (j <= rowSize * (rowSize - 1) + col && cells[j].c != "") {
-                if (cells[j].v != "") {
+                if (cells[j].v != 0) {
                   cells[i].v = cells[j].v;
                   break;
                 }
@@ -286,9 +285,9 @@
         let markedIndexes = [];
         for (let i = col; i <= rowSize * (rowSize - 1) + col; i += rowSize) {                 //处理删除某个填充字符后，重复填充的问题
           if (cells[i].c != "") {
-            markedIndexes.find((mIndex) => mIndex == cells[i].v) != undefined ? cells[i].v = "" : null;
+            markedIndexes.find((mIndex) => mIndex == cells[i].v) != undefined ? cells[i].v = 0 : null;
           } else {
-            (i != col && cells[i - rowSize].v != "") ? markedIndexes.push(cells[i - rowSize].v) : null;
+            (i != col && cells[i - rowSize].v != 0) ? markedIndexes.push(cells[i - rowSize].v) : null;
           }
         }
 
@@ -296,7 +295,7 @@
           let isTopCellEmpty = (i == col || cells[i - rowSize].c == "") ? true : false;        //临界的top只判断bottom
           let isBottomCellEmpty = (i == rowSize * (rowSize - 1) + col || cells[i + rowSize].c == "") ? true : false;     //临界的bottom只判断top
           if (isTopCellEmpty && isBottomCellEmpty) {
-            cells[i].v = "";
+            cells[i].v = 0;
           }
         }
       },
@@ -309,8 +308,8 @@
           return;
         }
         this.cells.forEach((cell) => {
-          cell.h == markIndex ? cell.h = "" : null;  //之前有cell标记为该index的就清除它的index
-          cell.v == markIndex ? cell.v = "" : null;
+          cell.h == markIndex ? cell.h = 0 : null;  //之前有cell标记为该index的就清除它的index
+          cell.v == markIndex ? cell.v = 0 : null;
         });
         let isHorizontal = (activedCells[1].p - activedCells[0].p == 1);
         activedCells.forEach((cell) => {
@@ -341,26 +340,57 @@
         return {top, bottom, left, right};
       },
       saveDataToServer(){
-        let c="𠮷";
-        let h=5;
-        let v=29;
-        let p=99;
-        let chvp=String.fromCodePoint(c.codePointAt(0),h,v,p);
-        console.log(typeof chvp);
-        for (let ch of chvp) {
-          console.log(ch.codePointAt(0));
+
+        /*let markedCards=this.cards.filter((card)=>card.selected==true);
+        if(markedCards.length<=2){
+          this.$message({
+            message: '请标记至少3个卡片',
+            type: 'warning'
+          });
+          return;
+        }
+        let chvps=[];
+        for(let cell of this.cells){
+          if(cell.h==""&&cell.v==""&&cell.c!=""){
+            this.$message({
+              message: '请将所有字符标号',
+              type: 'warning'
+            });
+            return;
+          }else if(cell.c!=""){
+            chvps.push(String.fromCodePoint(
+              cell.c.codePointAt(0),
+              cell.h,
+              cell.v,
+              cell.p
+            ));
+          }
         }
         let puzzle={
-          name:"test",
-          intro:"aaa",
-          sid:5,
-          info:c
+          name:"puzzle test",
+          intro:"test intro",
+          sid:"8",
+          chvps:JSON.stringify(chvps),
+          authorid:"bvsju9dklw1"
         }
-        console.log(JSON.stringify(puzzle));
-        this.axios.post("/api/puzzle/create",{
-          puzzle:JSON.stringify(puzzle)
+        this.axios.post("/api/puzzle/create",{puzzle:JSON.stringify(puzzle)});*/
+        this.axios.get("/api/puzzle/list_of_user",{
+          params:{
+            uid:'bvsju9dklw1'
+          }
         }).then((res)=>{
           console.log(res.data);
+          let chvps=JSON.parse(res.data[0].chvps);
+          chvps.forEach((chvp)=>{
+            let values=[];
+            for(let ch of chvp){
+              values.push(ch);
+            }
+            let p=values[3].codePointAt(0);
+            this.cells[p].c=values[0];
+            this.cells[p].h=values[1].codePointAt(0);
+            this.cells[p].v=values[2].codePointAt(0);
+          });
         });
       },
     }

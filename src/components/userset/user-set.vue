@@ -143,19 +143,7 @@
         }
       },
       createSet(){
-        /*let vocabularies=[
-          {term:"stated",definition:"规定的；阐明的；定期的"},
-          {term:"overboard",definition:"adv. 自船上落下；向船外"},
-          {term:"nano",definition:"n. 纳；毫微"},
-          {term:"left unchecked",definition:"不受监管的"},
-          {term:"centrifugal",definition:"( technical 术语 ) moving or tending to move away from a centre 离心的"},
-          {term:"feed",definition:"[ VN ] to give a plant a special substance to make it grow 施（肥等）\n" +
-              "Feed the plants once a week. 每星期要给这些花草施一次肥。 "},
-          {term:"resultant",definition:"[ only before noun ] ( formal ) caused by the thing that has just been mentioned 因而发生的；因此而产生的"},
-          {term:"marshal",definition:"( usually in compounds 通常构成复合词 ) an officer of the highest rank in the British army or air force （英国）陆军元帅，空军元帅"}
-        ]
-        console.log(JSON.stringify(vocabularies));*/
-        //this.$router.push('createSet');
+        this.$router.push('createSet');
       },
       filterSet(sids) {
         this.curSets = [];

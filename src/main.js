@@ -13,7 +13,6 @@ import materialicons from './assets/materialicons.css'
 
 axios.interceptors.response.use(
   response => {
-    console.log(response);
     if(response.data.errno==401){
       localStorage.removeItem('userInfo');
       Vue.prototype.$message.error('登陆信息过期或失效，请重新登陆！');
