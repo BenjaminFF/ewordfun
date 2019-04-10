@@ -1,8 +1,13 @@
 <template>
     <div class="login-page">
       <el-form ref="mForm" :model="formData" label-width="80px" :rules="formRules">
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="formData.email"></el-input>
+        <el-form-item label="邮箱" prop="email" autocomplete="on">
+          <el-autocomplete
+            class="inline-input"
+            :fetch-suggestions="querySearch"
+            :trigger-on-focus="false"
+            v-model="formData.email">
+          </el-autocomplete>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input type="password" v-model="formData.password"></el-input>
@@ -27,7 +32,8 @@
           formData: {},
           captchaData:"",
           showCaptcha:false,
-          isValidating:false
+          isValidating:false,
+          suggestEmails:[]
         }
       },
       created() {
@@ -42,8 +48,7 @@
             ],
             password: [
               {required: true, message: '密码不能为空', trigger: 'blur'},
-              {min: 6, max: 32, message: '密码长度在 6 到 32 个字符', trigger: 'blur'},
-              {}
+              {min: 6, max: 32, message: '密码长度在 6 到 32 个字符', trigger: 'blur'}
             ],
             captcha: [
               {required: true, message: '请输入验证码', trigger: 'blur'},
@@ -55,10 +60,23 @@
             password: "",
             captcha: ""
           }
+          if(localStorage.getItem("suggestEmails")!=undefined){
+            this.suggestEmails=JSON.parse(localStorage.getItem("suggestEmails"));
+          }
+          console.log(this.suggestEmails);
           this.fetchData();
         },
         fetchData(){
 
+        },
+        querySearch(queryString, cb) {
+          let data=[];
+          this.suggestEmails.forEach((email)=>{
+            data.push({
+              value:email
+            })
+          })
+          cb(data);
         },
         submitForm(formName) {
           this.$refs[formName].validate((valid) => {
@@ -75,16 +93,24 @@
           this.axios.post('/api/user/login',{email:this.formData.email,password:this.formData.password}).then((res)=>{
             this.isValidating=false;
             if(res.data.validated){
-              let userInfo={
-                name:res.data.name,
-                email:res.data.email,
-                loginTime:Date.now()
+              let userInfo= {
+                name: res.data.name,
+                email: res.data.email,
+                loginTime: Date.now()
               }
+              let suggestEmails=[];
+              if(localStorage.getItem("suggestEmails")!=undefined){
+                suggestEmails=JSON.parse(localStorage.getItem("suggestEmails"));
+                suggestEmails.unshift(userInfo.email);
+              }else {
+                suggestEmails.unshift(userInfo.email);
+              }
+              localStorage.setItem("suggestEmails",JSON.stringify(suggestEmails.slice(0,4)));
               localStorage.setItem('userInfo',JSON.stringify(userInfo));
               this.$router.push('/userSet');
             }else {
               this.$message({
-                message: '密码错误，请重新登陆',
+                message: '密码错误',
                 type: 'warning'
               });
             }

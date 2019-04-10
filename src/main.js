@@ -11,9 +11,24 @@ import util from './util'
 import '../theme/index.css'
 import materialicons from './assets/materialicons.css'
 
+axios.interceptors.response.use(
+  response => {
+    console.log(response);
+    if(response.data.errno==401){
+      localStorage.removeItem('userInfo');
+      Vue.prototype.$message.error('登陆信息过期或失效，请重新登陆！');
+      router.replace('/login');
+    }
+    return response;
+  },
+  err => {
+    console.log(err);
+    return Promise.reject(err);
+  }
+);
+
 Vue.use(VueAxios, axios)
 Vue.use(util)
-
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
