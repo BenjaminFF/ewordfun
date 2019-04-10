@@ -2,7 +2,7 @@
   <div class="m-container">
     <div class="puzzle-container">
       <div class="cells-container" :style="{'--row':Math.sqrt(size),'--column':Math.sqrt(size)}">
-        <div style="position: absolute;width: 2rem;height: 2rem;background-color: #42b983;right: 5px;top: -3rem"></div>
+        <div style="position: absolute;width: 2rem;height: 2rem;background-color: #42b983;right: 5px;top: -3rem" @click="saveDataToServer"></div>
         <div class="cell" v-for="cell in cells" :class="{'is-active':cell.isActive}" @click="cellClick(cell)">
           <el-input maxlength="1" style="width: 100%;height: 100%" v-on:focus="inputFocus($event,cell)" v-model="cell.c"
                     ref="cells" @input="inputChange(cell)"></el-input>
@@ -65,7 +65,6 @@
     methods: {
       onBindKey() {
         document.onkeydown = (ev) => {
-          console.log(ev.key);
           this.isKeyBoardFocus = true;
           this.moveCell(this.curCell.p, ev.key);
         }
@@ -115,7 +114,7 @@
         while (cells.length < this.size) {
           cells.push({
             c: "",     //char
-            h: "",     //horizontal mark,mark 对应card的Id,0代表没有
+            h: "",     //horizontal mark,mark 对应card的Id,-1代表没有
             v: "",     //vertical mark
             p: cells.length,
             isActive: false,
@@ -140,8 +139,8 @@
             return c1.vid - c2.vid
           });
           this.cards.forEach((card, index) => {
-            card.index = index;
-            card.selected = false
+            card.index = index + 1;
+            card.selected = false;
           });
           this.groupedCards = this.groupCards(this.cards, this.listCol);
         });
@@ -214,15 +213,15 @@
       updateCards() {
         let markedIndexes = [];
         this.cells.forEach((cell) => {
-          cell.h != "" ? markedIndexes.push(cell.h) : null;
-          cell.v != "" ? markedIndexes.push(cell.v) : null;
+          cell.h !== "" ? markedIndexes.push(cell.h) : null;
+          cell.v !== "" ? markedIndexes.push(cell.v) : null;
         });
+        console.log(markedIndexes);
         this.cards.forEach((card) => {
           markedIndexes.find((markIndex) => markIndex == card.index) != undefined ? card.selected = true : card.selected = false;
         });
       },
       updateRowMarks(row) {
-        console.log('updateRowMarks');
         let rowSize = Math.sqrt(this.size);
         let cells = this.cells;
         for (let i = rowSize * row; i < rowSize * (row + 1); i++) {     //remove
@@ -255,9 +254,9 @@
         }
 
         for (let i = rowSize * row; i < rowSize * (row + 1); i++) {                 //处理孤立的又标注了的cell
-          let isLeftEmpty=(i==rowSize*row||cells[i-1].c=="");
-          let isRightEmpty=(i==rowSize * (row + 1)-1||cells[i+1].c=="");
-          (isLeftEmpty&&isRightEmpty)?cells[i].h="":null;
+          let isLeftEmpty = (i == rowSize * row || cells[i - 1].c == "");
+          let isRightEmpty = (i == rowSize * (row + 1) - 1 || cells[i + 1].c == "");
+          (isLeftEmpty && isRightEmpty) ? cells[i].h = "" : null;
         }
       },
       updateColMarks(col) {
@@ -296,8 +295,8 @@
         for (let i = col; i <= rowSize * (rowSize - 1) + col; i += rowSize) {            //处理孤立的又标注了的cell
           let isTopCellEmpty = (i == col || cells[i - rowSize].c == "") ? true : false;        //临界的top只判断bottom
           let isBottomCellEmpty = (i == rowSize * (rowSize - 1) + col || cells[i + rowSize].c == "") ? true : false;     //临界的bottom只判断top
-          if(isTopCellEmpty&&isBottomCellEmpty){
-            cells[i].v="";
+          if (isTopCellEmpty && isBottomCellEmpty) {
+            cells[i].v = "";
           }
         }
       },
@@ -340,7 +339,30 @@
           bottom += rowSize;
         }
         return {top, bottom, left, right};
-      }
+      },
+      saveDataToServer(){
+        let c="𠮷";
+        let h=5;
+        let v=29;
+        let p=99;
+        let chvp=String.fromCodePoint(c.codePointAt(0),h,v,p);
+        console.log(typeof chvp);
+        for (let ch of chvp) {
+          console.log(ch.codePointAt(0));
+        }
+        let puzzle={
+          name:"test",
+          intro:"aaa",
+          sid:5,
+          info:c
+        }
+        console.log(JSON.stringify(puzzle));
+        this.axios.post("/api/puzzle/create",{
+          puzzle:JSON.stringify(puzzle)
+        }).then((res)=>{
+          console.log(res.data);
+        });
+      },
     }
   }
 </script>

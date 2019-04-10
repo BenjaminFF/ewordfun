@@ -100,6 +100,7 @@
             sid: sid
           }
         }).then((res) => {
+          console.log(res.data);
           this.set = res.data.set;
           this.vocabularies = res.data.vocabularies;
           this.vocabularies.forEach((vocabulary, index) => {

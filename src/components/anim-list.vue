@@ -64,7 +64,7 @@
               items[i].elm.style.transform = 'translateY(' + this.tweenData.y + 'px)';
             }
           }).onComplete(() => {
-            this.tweenX = new TWEEN.Tween(this.tweenData).to({x: 0}, 1200).easing(TWEEN.Easing.Elastic.Out).onUpdate(() => {
+            this.tweenX = new TWEEN.Tween(this.tweenData).to({x: 0}, 600).easing(TWEEN.Easing.Circular.Out).onUpdate(() => {
               e.style.transform = 'translateX(' + this.tweenData.x + '%)';
             }).onComplete(() => {
               window.cancelAnimationFrame(this.tweenData.requestID);
