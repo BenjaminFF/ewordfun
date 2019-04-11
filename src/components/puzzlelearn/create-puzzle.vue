@@ -36,6 +36,30 @@
         </el-row>
       </el-scrollbar>
     </div>
+    <span class="l-create-set__confirm-fab" @mouseover="confirmHovered=true" @mouseleave="confirmHovered=false"
+          :class="[{'animated tada':confirmHovered}]" @click="openDialog">
+        <i class="ef-icon-tick"></i>
+      </span>
+    <el-dialog
+      :title="$t('createDialog.header')"
+      :center="true"
+      :visible.sync="dialogVisible"
+      :modal-append-to-body="false"
+      :custom-class="'cs-dialog'"
+      width="20%">
+      <el-form :rules="rules" :model="puzzleInfo" ref="createSetForm">
+        <el-form-item prop="name">
+          <el-input :placeholder="$t('createDialog.name')" style="font-size: 1.5rem" v-model="puzzleInfo.name" maxlength="32"></el-input>
+        </el-form-item>
+        <el-form-item prop="intro">
+          <el-input type="textarea" min-row resize="none" :autosize="{ minRows: 8, maxRows: 8 }" :placeholder="$t('createDialog.introduction')"
+                    style="font-size: 1.2rem;margin-top: 1rem" v-model="puzzleInfo.intro"  maxlength="200"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button style="width: 100%;margin-top: 2rem;" type="primary" @click="submitForm('createSetForm')">{{$t('createDialog.submit')}}</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -54,7 +78,10 @@
         orientation: {},
         lastInputChar: "",
         isKeyBoardFocus: false,           //key board event invoke focus
-        curCell: {}             //for Arrow move
+        curCell: {},             //for Arrow move
+        confirmHovered:false,
+        dialogVisible:true,
+        puzzleInfo:{},
       }
     },
     created() {
@@ -124,6 +151,18 @@
         this.curCell = this.cells[Math.floor(Math.random() * this.size)];
         this.lastCellClick = {
           p: -1,
+        }
+        let sid = this.$route.params.sid;
+        this.puzzleInfo={
+          name:"",
+          intro:"",
+          chvps:"",
+          sid:sid
+        }
+        this.rules={
+          name:[
+            { required: true, message: this.$t('createDialog.nameEmpty'), trigger: 'blur' },
+          ]
         }
       },
       fetchData() {
@@ -340,16 +379,21 @@
         return {top, bottom, left, right};
       },
       saveDataToServer(){
+        /*let data="a010048 t010049 a01004a t01004b e01004c d01004d";
+        let chvps=data.split(" ");
+        console.log(chvps);
+        chvps.forEach((chvp)=>{
+          let c=chvp.length==7?chvp.substring(0,1):chvp.substring(0,2);
+          let hvp=chvp.length==7?chvp.substring(1,7):chvp.substring(2,8);
+          let h=parseInt(hvp.substring(0,2),16);
+          let v=parseInt(hvp.substring(2,4),16);
+          let p=parseInt(hvp.substring(4,6),16);
+          this.cells[p].c=c;
+          this.cells[p].h=h;
+          this.cells[p].v=v;
+        });*/
 
-        /*let markedCards=this.cards.filter((card)=>card.selected==true);
-        if(markedCards.length<=2){
-          this.$message({
-            message: '请标记至少3个卡片',
-            type: 'warning'
-          });
-          return;
-        }
-        let chvps=[];
+        let chvps="";
         for(let cell of this.cells){
           if(cell.h==""&&cell.v==""&&cell.c!=""){
             this.$message({
@@ -358,41 +402,57 @@
             });
             return;
           }else if(cell.c!=""){
-            chvps.push(String.fromCodePoint(
-              cell.c.codePointAt(0),
-              cell.h,
-              cell.v,
-              cell.p
-            ));
+            let h=cell.h>16?cell.h.toString(16):0+cell.h.toString(16);
+            let v=cell.v>16?cell.v.toString(16):0+cell.v.toString(16);
+            let p=cell.p>16?cell.p.toString(16):0+cell.p.toString(16);
+            let chvp=cell.c+h+v+p;
+            chvps+=chvp+" ";
           }
         }
+        console.log(chvps);
         let puzzle={
           name:"puzzle test",
           intro:"test intro",
           sid:"8",
-          chvps:JSON.stringify(chvps),
+          chvps:chvps,
           authorid:"bvsju9dklw1"
         }
-        this.axios.post("/api/puzzle/create",{puzzle:JSON.stringify(puzzle)});*/
-        this.axios.get("/api/puzzle/list_of_user",{
-          params:{
-            uid:'bvsju9dklw1'
-          }
-        }).then((res)=>{
-          console.log(res.data);
-          let chvps=JSON.parse(res.data[0].chvps);
-          chvps.forEach((chvp)=>{
-            let values=[];
-            for(let ch of chvp){
-              values.push(ch);
-            }
-            let p=values[3].codePointAt(0);
-            this.cells[p].c=values[0];
-            this.cells[p].h=values[1].codePointAt(0);
-            this.cells[p].v=values[2].codePointAt(0);
-          });
-        });
+
+        this.axios.post("/api/puzzle/create",{puzzle:JSON.stringify(puzzle)});
       },
+      openDialog(){
+        let markedCards=this.cards.filter((card)=>card.selected==true);
+        if(markedCards.length<=2){
+          this.$message({
+            message: '请标记至少3个卡片',
+            type: 'warning'
+          });
+          return;
+        }
+        for(let cell of this.cells){
+          if(cell.h==""&&cell.v==""&&cell.c!=""){
+            this.$message({
+              message: '请将所有字符标号',
+              type: 'warning'
+            });
+            return;
+          }
+        }
+        this.dialogVisible=true;
+      },
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.axios.post("/api/puzzle/create",{puzzle:JSON.stringify(this.puzzleInfo)});
+            this.$message({
+              message: '创建成功',
+              type: 'success'
+            });
+          } else {
+            return false;
+          }
+        });
+      }
     }
   }
 </script>
