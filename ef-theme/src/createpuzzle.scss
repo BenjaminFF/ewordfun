@@ -1,0 +1,150 @@
+@import "common/var";
+@import "mixins/mixins";
+
+@include b(createPuzzle) {
+  background-color: #f0f0f0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+
+  @include e(cells) {
+    --size: 3.8rem;
+    width: fit-content;
+    height: fit-content;
+    display: grid;
+    grid-template-columns: repeat(var(--row), var(--size));
+    grid-template-rows: repeat(var(--column), var(--size));
+    position: relative;
+  }
+  @include e(setList) {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    width: 40%;
+    & .el-scrollbar {
+      width: 100%;
+      height: 90%;
+
+      & .el-scrollbar__wrap {
+        overflow-x: hidden;
+      }
+
+      & .el-row {
+        width: 100%;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+    }
+  }
+}
+
+@include b(cp-cell) {
+  background-color: white;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.10);
+  border-radius: 3px;
+  margin: 3px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: gray;
+  position: relative;
+
+  @include when(active){
+    background-color: lightgray;
+  }
+
+  @include e(input) {
+    width: 100%;
+    height: 100%;
+
+    & .el-input__inner {
+      background-color: transparent;
+      border: none;
+      color: transparent;
+      font-size: 1.5rem;
+      text-shadow: 0 0 0 gray;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      cursor: default;
+    }
+
+    & .el-input__inner:focus {
+      background-color: #42b983;
+    }
+
+    & .el-input__inner::selection {
+      color: gray;
+      background-color: transparent;
+    }
+  }
+
+  @include e(h) {
+    position: absolute;
+    left: 0.1rem;
+    top: 0.1rem
+  }
+  @include e(v) {
+    position: absolute;
+    left: 0.1rem;
+    bottom: 0.1rem
+  }
+}
+
+@include b(cp-card) {
+  width: 100%;
+  min-height: 12rem;
+  margin-bottom: 20px;
+  user-select: none;
+  cursor: pointer;
+  position: relative;
+  @include e(inner) {
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    color: gray;
+  }
+
+  @include e(term) {
+    width: 100%;
+    height: fit-content;
+    text-align: center;
+    padding-bottom: 2rem;
+    font-size: 1.5rem
+  }
+
+  @include e(definition) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  @include e(index) {
+    width: 1.5rem;
+    height: 1.5rem;
+    position: absolute;
+    left: 50%;
+    bottom: 1rem;
+    text-align: center;
+    transform: translateX(-50%);
+    text-align: center;
+    vertical-align: middle;
+    line-height: 1.5rem;
+
+    @include when(selected){
+      border: 1px solid gray;
+      border-radius: 50%;
+    }
+  }
+}

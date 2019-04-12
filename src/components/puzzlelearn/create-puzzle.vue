@@ -1,34 +1,32 @@
 <template>
-  <div class="m-container">
-    <div class="puzzle-container">
-      <div class="cells-container" :style="{'--row':Math.sqrt(size),'--column':Math.sqrt(size)}">
-        <div style="position: absolute;width: 2rem;height: 2rem;background-color: #42b983;right: 5px;top: -3rem" @click="saveDataToServer"></div>
-        <div class="cell" v-for="cell in cells" :class="{'is-active':cell.isActive}" @click="cellClick(cell)">
-          <el-input maxlength="1" style="width: 100%;height: 100%" v-on:focus="inputFocus($event,cell)" v-model="cell.c"
+  <div class="createPuzzle">
+    <div style="height: 100%;display: flex;align-items: center;">
+      <div class="createPuzzle__cells" :style="{'--row':Math.sqrt(size),'--column':Math.sqrt(size)}">
+        <div class="cp-cell" v-for="cell in cells" :class="{'is-active':cell.isActive}" @click="cellClick(cell)">
+          <el-input maxlength="1" class="cp-cell__input" v-on:focus="inputFocus($event,cell)" v-model="cell.c"
                     ref="cells" @input="inputChange(cell)"></el-input>
-          <div style="position: absolute;left: 0.1rem;top: 0.1rem">{{cell.h!=0?cell.h:""}}</div>
-          <div style="position: absolute;left: 0.1rem;bottom: 0.1rem">{{cell.v!=0?cell.v:""}}</div>
+          <div class="cp-cell__h">{{cell.h!=0?cell.h:""}}</div>
+          <div class="cp-cell__v">{{cell.v!=0?cell.v:""}}</div>
         </div>
       </div>
     </div>
-    <div class="list-container">
-      <el-scrollbar style="width: 100%;height: 90%;">
-        <el-row justify="center" type="flex" :gutter="20" style="width: 100%;padding-left: 10px;padding-right: 10px">
+    <div class="createPuzzle__setList">
+      <el-scrollbar>
+        <el-row justify="center" type="flex" :gutter="20">
           <el-col v-for="cards in groupedCards" :span="Math.floor(24/listCol)"
                   style="display: flex;flex-direction: column">
             <div v-for="card in cards"
-                 style="width: 100%;min-height: 12rem;margin-bottom: 20px;user-select: none;cursor: pointer;position: relative"
+                 class="cp-card"
                  @click="markCells(card.index)">
-              <div
-                style="width: 100%;height: 100%;background-color: white;padding:2rem;border-radius: 10px;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);color: gray;margin: 10px">
-                <div style="width: 100%;height: fit-content;text-align: center;padding-bottom: 2rem;font-size: 1.5rem">
+              <div class="cp-card__inner">
+                <div class="cp-card__term">
                   {{card.term}}
                 </div>
-                <div style="display: flex;justify-content: center;align-items: center;font-size: 1.2rem">
+                <div class="cp-card__definition">
                   {{card.definition}}
                 </div>
-                <div style="position: absolute;right: 50%;bottom: 1rem;text-align: center;transform: translateX(50%)"
-                     :class="{'is-selected':card.selected}">{{card.index}}
+                <div :class="{'is-selected':card.selected}" class="cp-card__index">
+                  {{card.index}}
                 </div>
               </div>
             </div>
@@ -80,7 +78,7 @@
         isKeyBoardFocus: false,           //key board event invoke focus
         curCell: {},             //for Arrow move
         confirmHovered:false,
-        dialogVisible:true,
+        dialogVisible:false,
         puzzleInfo:{},
       }
     },
@@ -456,89 +454,3 @@
     }
   }
 </script>
-
-<style scoped>
-  .m-container {
-    background-color: #f0f0f0;
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-  }
-
-  .puzzle-container {
-    height: 100%;
-    display: flex;
-    align-items: center;
-  }
-
-  .list-container {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    width: 40%;
-  }
-
-  .cells-container {
-    --size: 3.8rem;
-    width: fit-content;
-    height: fit-content;
-    display: grid;
-    grid-template-columns: repeat(var(--row), var(--size));
-    grid-template-rows: repeat(var(--column), var(--size));
-    position: relative;
-  }
-
-  .cell {
-    background-color: white;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.10);
-    border-radius: 3px;
-    margin: 3px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: gray;
-    position: relative;
-  }
-
-  .is-active {
-    background-color: lightgrey;
-  }
-
-  .is-selected {
-    color: black;
-    border: 1px solid black;
-  }
-
-  .col-box {
-
-  }
-</style>
-
-<style>
-  .el-input__inner {
-    background-color: transparent;
-    border: none;
-    color: transparent;
-    font-size: 1.5rem;
-    text-shadow: 0 0 0 gray;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    cursor: default;
-  }
-
-  .el-input__inner:focus {
-    background-color: #42b983;
-  }
-
-  .el-input__inner::selection {
-    color: gray;
-    background-color: transparent;
-  }
-</style>
