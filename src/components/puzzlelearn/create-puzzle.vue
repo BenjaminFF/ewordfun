@@ -404,7 +404,7 @@
             let v=cell.v>16?cell.v.toString(16):0+cell.v.toString(16);
             let p=cell.p>16?cell.p.toString(16):0+cell.p.toString(16);
             let chvp=cell.c+h+v+p;
-            chvps+=chvp+" ";
+            chvps+=chvp+",";
           }
         }
         console.log(chvps);
