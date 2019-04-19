@@ -155,6 +155,7 @@
           name:"",
           intro:"",
           chvps:"",
+          puzzle_progress:"",
           sid:sid
         }
         this.rules={
@@ -392,6 +393,7 @@
         });*/
 
         let chvps="";
+        let puzzle_progress="";
         for(let cell of this.cells){
           if(cell.h==""&&cell.v==""&&cell.c!=""){
             this.$message({
@@ -405,6 +407,7 @@
             let p=cell.p>16?cell.p.toString(16):0+cell.p.toString(16);
             let chvp=cell.c+h+v+p;
             chvps+=chvp+",";
+            puzzle_progress+="?"+h+v+p;          //progress中的字符用“？”表示
           }
         }
         console.log(chvps);
@@ -436,6 +439,27 @@
             return;
           }
         }
+        let chvps="";
+        let puzzle_progress="";
+        for(let cell of this.cells){
+          if(cell.h==""&&cell.v==""&&cell.c!=""){
+            this.$message({
+              message: '请将所有字符标号',
+              type: 'warning'
+            });
+            return;
+          }else if(cell.c!=""){
+            let h=cell.h>16?cell.h.toString(16):0+cell.h.toString(16);
+            let v=cell.v>16?cell.v.toString(16):0+cell.v.toString(16);
+            let p=cell.p>16?cell.p.toString(16):0+cell.p.toString(16);
+            let chvp=cell.c+h+v+p;
+            chvps+=chvp+",";
+            puzzle_progress+="?"+h+v+p+",";          //progress中的字符用“？”表示
+          }
+        }
+        console.log(chvps);
+        this.puzzleInfo.chvps=chvps;
+        this.puzzleInfo.puzzle_progress=puzzle_progress;
         this.dialogVisible=true;
       },
       submitForm(formName) {
