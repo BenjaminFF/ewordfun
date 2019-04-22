@@ -26,6 +26,7 @@ axios.interceptors.response.use(
   }
 );
 
+
 Vue.use(VueAxios, axios)
 Vue.use(util)
 Vue.config.productionTip = false

@@ -377,50 +377,6 @@
         }
         return {top, bottom, left, right};
       },
-      saveDataToServer(){
-        /*let data="a010048 t010049 a01004a t01004b e01004c d01004d";
-        let chvps=data.split(" ");
-        console.log(chvps);
-        chvps.forEach((chvp)=>{
-          let c=chvp.length==7?chvp.substring(0,1):chvp.substring(0,2);
-          let hvp=chvp.length==7?chvp.substring(1,7):chvp.substring(2,8);
-          let h=parseInt(hvp.substring(0,2),16);
-          let v=parseInt(hvp.substring(2,4),16);
-          let p=parseInt(hvp.substring(4,6),16);
-          this.cells[p].c=c;
-          this.cells[p].h=h;
-          this.cells[p].v=v;
-        });*/
-
-        let chvps="";
-        let puzzle_progress="";
-        for(let cell of this.cells){
-          if(cell.h==""&&cell.v==""&&cell.c!=""){
-            this.$message({
-              message: '请将所有字符标号',
-              type: 'warning'
-            });
-            return;
-          }else if(cell.c!=""){
-            let h=cell.h>16?cell.h.toString(16):0+cell.h.toString(16);
-            let v=cell.v>16?cell.v.toString(16):0+cell.v.toString(16);
-            let p=cell.p>16?cell.p.toString(16):0+cell.p.toString(16);
-            let chvp=cell.c+h+v+p;
-            chvps+=chvp+",";
-            puzzle_progress+="?"+h+v+p;          //progress中的字符用“？”表示
-          }
-        }
-        console.log(chvps);
-        let puzzle={
-          name:"puzzle test",
-          intro:"test intro",
-          sid:"8",
-          chvps:chvps,
-          authorid:"bvsju9dklw1"
-        }
-
-        this.axios.post("/api/puzzle/create",{puzzle:JSON.stringify(puzzle)});
-      },
       openDialog(){
         let markedCards=this.cards.filter((card)=>card.selected==true);
         if(markedCards.length<=2){
