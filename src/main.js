@@ -10,6 +10,25 @@ import langStorage from './lang'
 import util from './util'
 import '../theme/index.css'
 import materialicons from './assets/materialicons.css'
+import Vuetify, {
+  VApp, // required
+  VBtn,
+  VIcon,
+  VSpeedDial
+} from 'vuetify/lib'
+import { Ripple } from 'vuetify/lib/directives'
+
+Vue.use(Vuetify, {
+  components: {
+    VApp,
+    VBtn,
+    VSpeedDial,
+    VIcon
+  },
+  directives: {
+    Ripple
+  }
+})
 
 axios.interceptors.response.use(
   response => {
