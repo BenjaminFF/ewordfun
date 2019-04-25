@@ -9,12 +9,18 @@
   top: 0;
   background-color: $--ef-color-lighter;
 
-  @include e(list-container){
+  @include e(list-container) {
     width: 100%;
     height: 100%;
   }
 
-  @include e(confirm-fab){
+  @include e(list) {
+    width: 100%;
+    height: 75%;
+    margin-top: 5%;
+  }
+
+  @include e(confirm-fab) {
     width: 4rem;
     height: 4rem;
     border-radius: 3rem;
@@ -29,12 +35,12 @@
     cursor: pointer;
     background-color: $--ef-color-primary;
 
-    &:hover{
+    &:hover {
       opacity: 0.7;
     }
   }
 
-  @include e(return){
+  @include e(return) {
     position: absolute;
     left: 15%;
     top: 2rem;
@@ -42,29 +48,46 @@
     opacity: 0.7;
     font-size: 1.5rem;
 
-    &:hover{
+    &:hover {
       opacity: 1;
       cursor: pointer;
     }
   }
+
+  @include res(xs) {
+    @include e(confirm-fab) {
+      right: 1rem;
+      bottom: 1rem;
+    }
+
+    @include e(return) {
+      left: 1rem;
+      top: 1rem;
+    }
+
+    @include e(list) {
+      height: 80%;
+      margin-top: 10%;
+    }
+  }
 }
 
-@include b(cs-dialog){
+@include b(cs-dialog) {
   min-width: 30rem;
   border-radius: 10px;
 
-  & .el-dialog__title{
+  & .el-dialog__title {
     font-size: 1.8rem;
     color: $--ef-color-primary;
   }
 
-  & .el-dialog__close{
+  & .el-dialog__close {
     font-size: 1.8rem;
     color: $--ef-color-mid-gray;
   }
 }
 
-@include b(l-create-set-card){
+@include b(l-create-set-card) {
   width: 100%;
   height: fit-content;
   color: white;
@@ -75,19 +98,25 @@
   flex-direction: column;
 
 
-  @include e(id){
+  @include e(id) {
     font-size: 1.2rem;
     color: white;
     text-align: center;
   }
 
-  & .el-textarea{
+  @include e(icon) {
+    text-align: center;
+    cursor: pointer;
+    font-size: 1.2rem
+  }
+
+  & .el-textarea {
     width: 95%;
     padding-top: 1.6rem;
     padding-bottom: 1.6rem;
   }
 
-  & .el-textarea__inner{
+  & .el-textarea__inner {
     border: none;
     border-bottom: 2px solid white;
     border-radius: 0px;
@@ -99,7 +128,7 @@
     color: white;
   }
 
-  @include e(main){
+  @include e(main) {
     width: 60%;
     height: fit-content;
     background-color: transparent;
@@ -109,7 +138,13 @@
     background-color: white;
   }
 
-  @include e(add-button){
+  @include e(button-container) {
+    width: 70%;
+    text-align: center;
+    height: 3rem;
+  }
+
+  @include e(add-button) {
     width: 3rem;
     height: 3rem;
     border-radius: 3rem;
@@ -119,12 +154,12 @@
     display: inline-block;
     cursor: pointer;
     color: white;
-    &:hover{
+    &:hover {
       opacity: 0.7;
     }
   }
 
-  @include e(bottom-add){
+  @include e(bottom-add) {
     position: absolute;
     left: 0;
     top: 0;
@@ -138,5 +173,46 @@
     align-items: center;
     font-size: 1.5rem;
     text-decoration: underline;
+  }
+
+  @include res(xs) {
+    @include e(main) {
+      width: calc(100% - 4rem);
+      border-radius: 1rem;
+    }
+
+    & .el-textarea {
+      width: 95%;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    & .el-textarea__inner {
+      border-bottom: 1px solid white;
+      font-size: 1rem;
+      padding-bottom: 0rem;
+    }
+
+    @include e(add-button) {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 2rem;
+      line-height: 2rem;
+      font-size: 1.2rem;
+    }
+
+    @include e(icon) {
+      font-size: 1rem
+    }
+
+    @include e(bottom-add) {
+      font-size: 1.2rem;
+    }
+
+    @include e(button-container) {
+      width: 90%;
+      text-align: center;
+      height: 2rem;
+    }
   }
 }

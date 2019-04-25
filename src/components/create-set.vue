@@ -2,26 +2,26 @@
   <transition enter-active-class="animated slideInDown" leave-active-class="animated slideOutUp" v-on:after-enter="afterEnter">
     <div class="l-create-set" v-if="createSetVisible">
       <div class="l-create-set__list-container">
-        <anim-list ref="animList" :items="cards" style="width: 100%;height: 75%;margin-top: 5%;">
+        <anim-list ref="animList" :items="cards" class="l-create-set__list">
           <div class="l-create-set-card" v-for="(card,index) in cards" :key="card.key" :class="{'animated bounceInLeft':card.isInitialCard}">
             <el-row class="l-create-set-card__main" @mouseenter.native="card.hovered=true" ref="cards"
                     @mouseleave.native="card.hovered=false" :style="{backgroundColor:card.backgroundColor}">
-              <el-col class="l-create-set-card__id" :span="1">{{index+1}}</el-col>
-              <el-col class="term" :span="11">
+              <el-col class="l-create-set-card__id" :span="1" :xs="2">{{index+1}}</el-col>
+              <el-col class="term" :span="11" :xs="10">
                 <el-input type="textarea" autosize resize="none" style="margin-rigt: 5%" v-model="card.term" ref="termInput"></el-input>
               </el-col>
-              <el-col class="definition" :span="11">
+              <el-col class="definition" :span="11" :xs="10">
                 <el-input type="textarea" autosize resize="none" style="margin-left: 5%"
                           v-model="card.definition" ref="defInput"></el-input>
               </el-col>
-              <el-col class="delete" :span="1" style="text-align: center;cursor: pointer;font-size: 1.2rem">
+              <el-col class="delete l-create-set-card__icon" :span="1" :xs="2">
                 <i class="ef-icon-trash" @click="delCard(index)" v-if="card.hovered" v-ripple></i>
               </el-col>
               <div class="l-create-set-card__bottom-add" v-if="index==cards.length-1" @click="addCard(index-1)" :style="{backgroundColor:card.backgroundColor}">
                 {{$t('createSet.addCard')}}
               </div>
             </el-row>
-            <div style="width: 70%;text-align: center;height: 3rem" @mouseenter="card.addVisible=true"
+            <div class="l-create-set-card__button-container" @mouseenter="card.addVisible=true"
                  @mouseleave="card.addVisible=false">
             <span class="l-create-set-card__add-button animated fadeIn" @click="addCard(index)" :style="{backgroundColor:card.backgroundColor}"
                   v-if="card.addVisible&&index<cards.length-2" v-ripple>

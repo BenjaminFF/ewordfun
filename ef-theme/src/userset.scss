@@ -29,22 +29,100 @@
     color: white;
     background-color: $--ef-color-primary !important;
   }
+
+  @include res(xs) {
+    & .el-scrollbar__wrap {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+
+    @include e(add-button) {
+      right: 1rem;
+      bottom: 1rem;
+      font-size: 1rem;
+
+      & .v-btn--floating{
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
 }
 
 @include b(us-control-bar) {
-  width: 60%;
+  width: 100%;
   height: 20%;
-  margin-left: 20%;
+  padding-left: 20%;
+  padding-right: 20%;
   display: flex;
   align-items: center;
   font-size: 16px;
   color: gray !important;
+
+  @include e(label) {
+    margin-right: 1rem;
+  }
+
+  @include e(sort-select){
+
+  }
+
+  @include e(folder-select){
+
+  }
 
   @include e(icon) {
     font-size: 1.5rem;
     margin-left: 1rem;
     cursor: pointer;
     color: $--ef-color-primary !important;
+  }
+
+  @include res(xs) {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    height: 15%;
+    font-size: 1rem;
+
+    @include e(label) {
+      display: none;
+    }
+
+    & .el-select{
+      width: 100%;
+    }
+
+    @include e(sort-select){
+
+
+      & .el-input__inner{
+        border-left: 0px;
+        border-right: 0px;
+        border-top: 0px;
+        border-bottom-width: 2px;
+        border-radius: 0px;
+        padding: 0px;
+        line-height: 30px;
+        height: 30px;
+        width: 100%;
+      }
+
+      & .el-input__icon{
+        line-height: 30px;
+      }
+
+      & .el-input__suffix{
+        right: 0px;
+      }
+    }
+
+    @include e(folder-select){
+      display: none;
+    }
+
+    @include e(icon) {
+      display: none;
+    }
   }
 }
 
@@ -60,13 +138,14 @@
   transition: all 0.3s ease-in-out;
 
   &:hover {
-    transform: scale3d(1.05, 1.05,1.05);
+    transform: scale3d(1.05, 1.05, 1.05);
   }
 
   @include e(date) {
     margin-bottom: 2rem;
     font-size: 1.4rem;
     color: gray !important;
+    user-select: none;
   }
 
   @include e(info-container) {
@@ -81,11 +160,13 @@
   @include e(name) {
     font-size: 1.6rem;
     color: inherit;
+    user-select: none;
   }
 
   @include e(intro) {
     font-size: 1.2rem;
     color: inherit;
+    user-select: none;
   }
 
   @include e(icons) {
@@ -95,5 +176,39 @@
     align-items: center;
     padding-right: 1rem;
     color: white;
+  }
+
+  @include res(xs) {
+    height: 5rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+
+    &:hover {
+      transform: scale3d(1, 1, 1);
+    }
+
+    & .v-btn{
+      margin: 0px;
+    }
+
+    @include e(date) {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      color: gray !important;
+    }
+
+    @include e(name) {
+      font-size: 1.4rem;
+      color: inherit;
+    }
+
+    @include e(intro) {
+      font-size: 1.2rem;
+      color: inherit;
+    }
+
+    @include e(icons) {
+      font-size: 1.3rem;
+    }
   }
 }

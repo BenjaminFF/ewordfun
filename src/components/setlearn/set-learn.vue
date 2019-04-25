@@ -2,8 +2,8 @@
   <div class="set-learn">
     <div class="set-learn__inner animated fadeIn">
       <div class="set-learn-header" v-if="vocabularies.length>0">
-        <div style="font-size: 3rem;color: white;margin: 1rem">{{set.name}}</div>
-        <div style="font-size: 2rem;color: white">{{set.intro}}</div>
+        <div class="set-learn-header__name">{{set.name}}</div>
+        <div class="set-learn-header__intro">{{set.intro}}</div>
       </div>
       <el-scrollbar style="width: 100%;height: 80%;margin-top: 2rem" class="set-learn__list">
         <div class="l-learncard" v-for="(vocabulary,index) in vocabularies"

@@ -13,6 +13,10 @@
   align-items: center;
   justify-content: center;
 
+  & .v-btn {
+    margin: 0px;
+  }
+
   @include e(inner) {
     width: 60%;
     height: 85%;
@@ -41,6 +45,22 @@
   @include e(loading) {
     background-color: $--ml-loading-color !important;
   }
+
+  @include res(xs) {
+    @include e(inner) {
+      width: calc(100% - 2rem);
+      height: 88%;
+    }
+
+    @include e(controlBar) {
+      height: 15%;
+      font-size: 1.2rem;
+    }
+
+    @include e(content-layout) {
+      height: 85%;
+    }
+  }
 }
 
 @include b(ml-progress) {
@@ -66,7 +86,6 @@
   height: fit-content;
   display: flex;
   justify-content: center;
-  font-size: 2rem;
   color: $--ml-underline-text-color;
   cursor: pointer;
 
@@ -102,6 +121,15 @@
       margin-left: 0px;
     }
   }
+
+  @include res(xs) {
+
+    @include e(underline) {
+      font-size: 2rem;
+      min-width: 1.5rem;
+      height: 2rem;
+    }
+  }
 }
 
 @include b(ml-definition) {
@@ -116,6 +144,10 @@
 
   & .el-scrollbar__wrap {
     overflow-x: hidden !important;
+  }
+
+  @include res(xs) {
+    font-size: 1.3rem;
   }
 }
 
@@ -165,6 +197,18 @@
       color: white;
     }
   }
+
+  @include res(xs) {
+    @include e(inner) {
+      --size: 5.5rem;
+    }
+
+
+
+    @include e(cell) {
+      font-size: 1.2rem;
+    }
+  }
 }
 
 @include b(ml-bottom-bar) {
@@ -181,18 +225,18 @@
     background-color: rgba($--ml-error-color, 0.5);
   }
 
-  @include e(progress){
+  @include e(progress) {
     position: absolute;
-    & .el-progress-circle__track{
+    & .el-progress-circle__track {
       stroke: $--ml-bottom-bar-progress-background-color !important;
     }
 
-    & .el-progress__text{
+    & .el-progress__text {
       font-size: 1.5rem !important;
       color: $--ml-success-color;
     }
 
-    & .el-progress-circle__path{
+    & .el-progress-circle__path {
       stroke: $--ml-success-color;
     }
   }
@@ -200,7 +244,7 @@
   @include e(button) {
     padding: 0.8rem 2.3rem;
     border-radius: 5rem;
-    border:2px solid $--ml-bottom-bar-button-color;
+    border: 2px solid $--ml-bottom-bar-button-color;
     background-color: $--ml-bottom-bar-button-color;
     color: $--ml-bottom-bar-button-text-color;
     font-size: 1.2rem;
@@ -212,7 +256,7 @@
     outline: none;
     cursor: pointer;
 
-    @include when(primary){
+    @include when(primary) {
       border-color: $--ef-color-primary;
       background-color: $--ef-color-primary;
       color: white;
@@ -222,27 +266,27 @@
       }
     }
 
-    @include when(plain){
-      border:2px solid $--ml-bottom-bar-plain-button-border-color;
+    @include when(plain) {
+      border: 2px solid $--ml-bottom-bar-plain-button-border-color;
       background-color: transparent;
       color: $--ml-bottom-bar-plain-button-text-color;
       &:hover {
         background-color: $--ml-bottom-bar-plain-button-border-color;
-        border:2px solid $--ml-bottom-bar-plain-button-border-color;
+        border: 2px solid $--ml-bottom-bar-plain-button-border-color;
         color: $--ef-color-lighter;
       }
     }
 
-    @include when(disabled){
+    @include when(disabled) {
       cursor: default;
       background-color: $--ml-disable-color;
       border-color: $--ml-disable-color;
-      color: lighten($--ml-disable-color,30%);
+      color: lighten($--ml-disable-color, 30%);
 
-      &:hover{
+      &:hover {
         background-color: $--ml-disable-color;
         border-color: $--ml-disable-color;
-        color: lighten($--ml-disable-color,30%);
+        color: lighten($--ml-disable-color, 30%);
       }
     }
 
@@ -304,6 +348,41 @@
       color: darken($--ml-error-color, 10%);
     }
   }
+
+  @include res(xs) {
+    height: 12%;
+    @include e(button) {
+      font-size: 1rem;
+      padding: 0.4rem 0.8rem;
+      letter-spacing: 0.5rem;
+      text-indent: 0.5rem;
+
+      @include when(plain) {
+        &:hover {
+          border: 2px solid $--ml-bottom-bar-plain-button-border-color;
+          background-color: transparent;
+          color: $--ml-bottom-bar-plain-button-text-color;
+        }
+      }
+    }
+
+    @include e(progress){
+      & .el-progress__text {
+        font-size: 1.2rem !important;
+        color: $--ml-success-color;
+      }
+    }
+
+    @include e(info-icon) {
+      padding: 1rem;
+      font-size: 1.5rem;
+      border-radius: 3rem;
+    }
+
+    @include e(info-text) {
+      font-size: 1.2rem;
+    }
+  }
 }
 
 @include b(ml-list) {
@@ -341,12 +420,24 @@
     white-space: pre-line;
     border-bottom: 1px solid $--ml-list-item-border-color;
 
-    & .unpassed_count{
+    & .unpassed_count {
       text-align: center;
       color: $--ml-error-color;
-      @include when(zero){
+      @include when(zero) {
         color: $--ef-color-primary;
       }
+    }
+  }
+
+  @include res(xs){
+    @include e(title) {
+      font-size: 1.2rem;
+    }
+
+    @include e(item) {
+      font-size: 1rem;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
     }
   }
 }

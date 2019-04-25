@@ -24,21 +24,60 @@
   padding-left: 20%;
   padding-right: 20%;
 
-  @include e(userInfo) {
-    cursor: pointer;
-    font-size: 1.5rem;
-    color: $--ef-color-primary;
+  & .v-btn{
+    margin: 0px;
   }
 
   @include e(title){
     font-size: 2rem;
-    color: $--ef-color-primary;
     text-align: center;
     cursor: pointer;
+    color: $--app-header-text-color;
+  }
+
+  @include e(userInfo) {
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin-right: 0.1rem;
+    color: $--app-header-text-color;
   }
 
   @include e(menu){
-    color: $--ef-color-primary !important;
+    color: $--app-header-text-color !important;
     cursor: pointer;
+  }
+
+  @include e(star){
+    display: none;
+  }
+
+  @include res(xs){
+    padding-left: 2rem;
+    padding-right: 2rem;
+    height: 4rem;
+    flex-direction: row-reverse;
+    background-color: $--app-header-xs-bg-color;
+
+    @include e(title){
+      font-size: 1.5rem !important;
+      display: flex;
+      justify-content: left;
+      color: $--app-header-xs-text-color;
+    }
+
+    @include e(userInfo) {
+      display: none;
+    }
+
+    @include e(menu){
+      color: $--app-header-xs-text-color !important;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    @include e(star){
+      display: block;
+      font-size: 1.3rem;
+    }
   }
 }

@@ -45,10 +45,14 @@
         </div>
       </div>
       <div class="ml-list animated fadeIn" v-if="progress.stepStateId==2||progress.stepStateId==3">
-        <div class="ml-list__title" :class="{'is-unpassed':progress.stepStateId==2}">{{progress.stepStateId==2?'错误单词'+progress.unpassCards.length+'个':"复习"}}</div>
+        <div class="ml-list__title" :class="{'is-unpassed':progress.stepStateId==2}">
+          {{progress.stepStateId==2?'错误单词'+progress.unpassCards.length+'个':"复习"}}
+        </div>
         <el-scrollbar class="ml-list__scrollbar">
           <el-row v-for="card in progress.unpassCards" class="ml-list__item">
-            <el-col :span="2" class="unpassed_count" :class="{'is-zero':card.rmatrix_unpass_count==0}">{{card.rmatrix_unpass_count==0?"+1":"-"+card.rmatrix_unpass_count}}</el-col>
+            <el-col :span="2" class="unpassed_count" :class="{'is-zero':card.rmatrix_unpass_count==0}">
+              {{card.rmatrix_unpass_count==0?"+1":"-"+card.rmatrix_unpass_count}}
+            </el-col>
             <el-col :span="8">{{card.term}}</el-col>
             <el-col :span="14">{{card.definition}}</el-col>
           </el-row>
@@ -59,11 +63,12 @@
             :class="{'is-error':answerStateId==2,'is-success':answerStateId==1}"
             v-if="!dataLoading">
       <el-col :span="12" style="display: flex;justify-content: center;align-items: center;height: 100%">
-        <div class="ml-bottom-bar__button is-plain"
+        <div class="ml-bottom-bar__button is-plain" v-if="answerStateId==0&&curCards.length!=progress.cur"
              :class="{'is-invisible':answerStateId!=0||curCards.length==progress.cur}"
              @click="skipCard">跳过
         </div>
-        <el-progress type="circle" :percentage="totalProgress.percentage" width="110" stroke-width="8"
+        <el-progress type="circle" :percentage="totalProgress.percentage" :width="isMobile?55:110"
+                     :stroke-width="isMobile?4:8"
                      class="ml-bottom-bar__progress"
                      v-if="curCards.length==progress.cur"></el-progress>
         <div style="width: fit-content;position: absolute;display: flex"
@@ -83,7 +88,8 @@
       </el-col>
       <el-col :span="12" style="display: flex;justify-content: center;align-items: center;height: 100%">
         <button class="ml-bottom-bar__button is-primary" @click="nextStep"
-             :class="{'is-error':answerStateId==2,'is-success':answerStateId==1,'is-disabled':getStepState.Id==0&&!canCheckAnswer}" :disabled="getStepState.Id==0&&!canCheckAnswer">
+                :class="{'is-error':answerStateId==2,'is-success':answerStateId==1,'is-disabled':getStepState.Id==0&&!canCheckAnswer}"
+                :disabled="getStepState.Id==0&&!canCheckAnswer">
           {{getStepState.text}}
         </button>
       </el-col>
@@ -104,12 +110,14 @@
         dataLoading: true,
         stepStates: [],
         totalProgress: {},
-        totalCards: []              //用来显示重新学习页面card没有通过的次数
+        totalCards: [],              //用来显示重新学习页面card没有通过的次数
+        isMobile: false
       }
     },
     created() {
       this.init();
       this.fetchData();
+      this.isMobile = window.mobilecheck();
     },
     watch: {
       'progress.cur': 'updateStepState'
@@ -128,11 +136,11 @@
           return curCard.Passed ? 1 : 2;
         }
       },
-      canCheckAnswer(){
-        if(this.progress.cur<this.curCards.length){
+      canCheckAnswer() {
+        if (this.progress.cur < this.curCards.length) {
           let curCard = this.curCards[this.progress.cur];
-          return curCard.curPos==curCard.underlines.length;
-        }else {
+          return curCard.curPos == curCard.underlines.length;
+        } else {
           return false;
         }
       }
@@ -145,9 +153,9 @@
           {Id: 2, text: "下一轮", func: this.startNextRound},
           {Id: 3, text: "重新学习", func: this.reLearn}
         ]
-        this.totalCards=[];
-        this.curCards=[];
-        this.totalProgress={};
+        this.totalCards = [];
+        this.curCards = [];
+        this.totalProgress = {};
       },
       fetchData() {
         let sid = this.$route.params.sid;
@@ -160,12 +168,12 @@
         }).then((res) => {
           this.set = res.data.set;
           this.curCards = this.buildCards(res.data.vocabularies);         //初始时的curCards包含所有card,passed会在数据开头，后面的curCards只包含unpassed cards如果全部Pass了，自动刷新
-          this.curCards.forEach((card)=>{
+          this.curCards.forEach((card) => {
             this.totalCards.push({
-              term:card.term,
-              definition:card.definition,
+              term: card.term,
+              definition: card.definition,
               rmatrix_unpass_count: card.rmatrix_unpass_count,
-              rid:card.rid
+              rid: card.rid
             })
           })
           console.log(this.set);
@@ -210,7 +218,7 @@
           });
         } else {
           curCard.rmatrix_unpass_count++;
-          this.totalCards.filter((card)=>card.rid==curCard.rid)[0].rmatrix_unpass_count++;
+          this.totalCards.filter((card) => card.rid == curCard.rid)[0].rmatrix_unpass_count++;
           this.axios.post('/api/v_record/update', {
             v_record: JSON.stringify({rid: curCard.rid, rmatrix_unpass_count: curCard.rmatrix_unpass_count})
           });
@@ -220,10 +228,10 @@
         this.updateStepState();
       },
       //skipCard means that you didn't pass the curCard.
-      skipCard(){
+      skipCard() {
         let curCard = this.curCards[this.progress.cur];
         curCard.rmatrix_unpass_count++;
-        this.totalCards.filter((card)=>card.rid==curCard.rid)[0].rmatrix_unpass_count++;
+        this.totalCards.filter((card) => card.rid == curCard.rid)[0].rmatrix_unpass_count++;
         this.axios.post('/api/v_record/update', {
           v_record: JSON.stringify({rid: curCard.rid, rmatrix_unpass_count: curCard.rmatrix_unpass_count})
         });
@@ -232,24 +240,24 @@
       startNextCard() {
         this.progress.checkedAnswer = false;
         this.progress.cur++;              //这部会自动刷新stepStateId,所以后面要用nextTick
-        this.$nextTick(()=>{
+        this.$nextTick(() => {
           let stepStateId = this.progress.stepStateId;
           if (stepStateId == 2 || stepStateId == 3) {              //表示一轮结束或全部学习完成
             this.progress.percentage = 100;
             this.progress.unpassCards = stepStateId == 2 ? this.curCards.filter((card) => !card.Passed) : this.totalCards;
-            this.progress.unpassCards=this.progress.unpassCards.sort((card1,card2)=>{
-              return card2.rmatrix_unpass_count-card1.rmatrix_unpass_count
+            this.progress.unpassCards = this.progress.unpassCards.sort((card1, card2) => {
+              return card2.rmatrix_unpass_count - card1.rmatrix_unpass_count
             });
             this.totalProgress.percentage = (this.totalProgress.cur / this.totalProgress.total).toFixed(3) * 100;
-            if(stepStateId==3){
+            if (stepStateId == 3) {
               let sid = this.$route.params.sid;
               let uid = this.$route.params.uid;
-              let setRecord={
-                sid:sid,
-                uid:uid,
-                rmatrix:this.set.rmatrix+1
+              let setRecord = {
+                sid: sid,
+                uid: uid,
+                rmatrix: this.set.rmatrix + 1
               };
-              this.axios.post('/api/set/updateRecord',{setRecord:JSON.stringify(setRecord)});
+              this.axios.post('/api/set/updateRecord', {setRecord: JSON.stringify(setRecord)});
             }
           } else {
             this.progress.percentage = (this.progress.cur / this.progress.total) * 100;
@@ -264,7 +272,7 @@
       },
       //重新学习页面显示所有card和它们错误的次数
       reLearn() {
-        this.dataLoading=true;
+        this.dataLoading = true;
         this.init();
         this.fetchData();
       },
@@ -293,17 +301,17 @@
       },
       buildCards(vocabularies) {
         let cards = vocabularies.filter((vocabulary) => vocabulary.rmatrix == 0);        //筛选没有学习过的
-        if(cards.length==0){              //全部学习完成
-          vocabularies.forEach((vocabulary)=>{
-            vocabulary.rmatrix_unpass_count=0;
-            vocabulary.rmatrix=0;
+        if (cards.length == 0) {              //全部学习完成
+          vocabularies.forEach((vocabulary) => {
+            vocabulary.rmatrix_unpass_count = 0;
+            vocabulary.rmatrix = 0;
             cards.push(vocabulary);
           })
-          this.axios.post("/api/v_record/updateMany",{
-            v_records:JSON.stringify(cards)
+          this.axios.post("/api/v_record/updateMany", {
+            v_records: JSON.stringify(cards)
           })
         }
-        cards=_.shuffle(cards);
+        cards = _.shuffle(cards);
         cards.forEach((card) => {
           let splitStrs = this.splitString(card.term);            //将term拆分成多个字符串
           let underlines = [];
@@ -414,7 +422,7 @@
               cells.push(" ");
             }
           });
-          if (cells.join("") == str && cells[cells.length - 1].length <= minChars+2) {               //没有提前spilt并且split结束后的最后一个cell的字符数<=minChars+2
+          if (cells.join("") == str && cells[cells.length - 1].length <= minChars + 2) {               //没有提前spilt并且split结束后的最后一个cell的字符数<=minChars+2
             return cells;
           }
         }
