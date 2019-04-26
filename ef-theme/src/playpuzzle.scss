@@ -1,0 +1,90 @@
+@import "common/var";
+@import "mixins/mixins";
+
+@include b(playPuzzle) {
+  background-color: #f0f0f0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+
+  & .pp-scrollbar{
+    width: 90%;
+    height: 80%;
+
+    & .el-scrollbar__wrap {
+      overflow-x: hidden;
+    }
+  }
+
+  @include e(cells){
+    --size: 3.8rem;
+    width: fit-content;
+    height: fit-content;
+    display: grid;
+    grid-template-columns: repeat(var(--row), var(--size));
+    grid-template-rows: repeat(var(--column), var(--size));
+    position: relative;
+  }
+
+  @include e(left) {
+    flex: 2 0 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @include e(middle) {
+    flex: 6 0 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  @include e(right) {
+    flex: 2 0 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+}
+
+@include b(pp-card) {
+  width: 80%;
+  margin-left: 10%;
+  user-select: none;
+  cursor: pointer;
+  margin-bottom: 2rem;
+  position: relative;
+
+  @include e(inner) {
+    background-color: white;
+    padding: 3rem 2rem;
+    margin: 10px;
+    border-radius: 10px;
+    min-height: 10rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: gray;
+  }
+
+  @include e(definition) {
+    font-size: 1.2rem;
+  }
+
+  @include e(index) {
+    position: absolute;
+    bottom: 1rem
+  }
+}
+
+@include b(pp-cell){
+
+}
+

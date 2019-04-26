@@ -1,20 +1,19 @@
 <template>
-  <div class="play-puzzle">
-    <div class="left-container">
-      <el-scrollbar class="m-scrollbar">
+  <div class="playPuzzle">
+    <div class="playPuzzle__left">
+      <el-scrollbar class="pp-scrollbar">
         <div v-for="card in vCards"
-             style="width: 80%;margin-left: 10%;user-select: none;cursor: pointer;margin-bottom: 2rem"
+             class="pp-card"
              @click="activeCells(card.index,orientation.VERTICAL)">
-          <div
-            style="background-color: white;padding: 2rem;margin: 10px;border-radius: 10px;min-height: 10rem;display: flex;justify-content: center;align-items: center;color: gray">
-            <div style="font-size: 1.2rem;">{{card.definition}}</div>
-            <div :class="{'is-active':card.isActive}">{{card.index}}</div>
+          <div class="pp-card__inner">
+            <div class="pp-card__definition">{{card.definition}}</div>
+            <div :class="{'is-active':card.isActive}" class="pp-card__index">{{card.index}}</div>
           </div>
         </div>
       </el-scrollbar>
     </div>
-    <div class="middle-container">
-      <div class="createPuzzle__cells" :style="{'--row':Math.sqrt(size),'--column':Math.sqrt(size)}">
+    <div class="playPuzzle__middle">
+      <div class="playPuzzle__cells" :style="{'--row':Math.sqrt(size),'--column':Math.sqrt(size)}">
         <div class="cell-container" v-for="cell in cells" style="margin: 3px">
           <div class="cp-cell" style="width: 100%;height: 100%"
                :class="{'is-active':cell.isActive,'is-invisible':cell.invisible}" @click="cellClick(cell)">
@@ -26,15 +25,14 @@
         </div>
       </div>
     </div>
-    <div class="right-container">
-      <el-scrollbar class="m-scrollbar">
+    <div class="playPuzzle__right">
+      <el-scrollbar class="pp-scrollbar">
         <div v-for="card in hCards"
-             style="width: 80%;margin-left: 10%;user-select: none;cursor: pointer;margin-bottom: 2rem;color: gray"
+             class="pp-card"
              @click="activeCells(card.index,orientation.HORIZONTAL)">
-          <div
-            style="background-color: white;padding: 2rem;margin: 10px;border-radius: 10px;min-height: 10rem;display: flex;justify-content: center;align-items: center">
+          <div class="pp-card__inner">
             <div style="font-size: 1.2rem;">{{card.definition}}</div>
-            <div :class="{'is-active':card.isActive}">{{card.index}}</div>
+            <div :class="{'is-active':card.isActive}" class="pp-card__index">{{card.index}}</div>
           </div>
         </div>
       </el-scrollbar>
@@ -201,39 +199,6 @@
 </script>
 
 <style scoped>
-  .play-puzzle {
-    background-color: #f0f0f0;
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-  }
-
-  .left-container {
-    flex: 2 0 0;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .middle-container {
-    flex: 6 0 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .right-container {
-    flex: 2 0 0;
-    height: 100%;
-    display: flex;
-    align-items: center;
-  }
 
   .cell-container {
     width: auto;
@@ -248,41 +213,5 @@
 
   .is-invisible {
     display: none;
-  }
-
-  .hcards {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .hcard {
-    width: 100%;
-    min-height: 12rem;
-    user-select: none;
-    cursor: pointer;
-    position: relative;
-  }
-
-  .hcard-inner {
-    width: 100%;
-    height: 100%;
-    background-color: white;
-    padding: 2rem;
-    margin: 10px;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    color: gray;
-  }
-</style>
-
-<style>
-  .m-scrollbar {
-    width: 90%;
-    height: 80%;
-  }
-
-  .m-scrollbar .el-scrollbar__wrap {
-    overflow-x: hidden;
   }
 </style>

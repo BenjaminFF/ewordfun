@@ -48,14 +48,20 @@
         <v-btn
           fab
           dark
-          color="#42b983" class="set-learn__fab">
-          <v-icon @click="pushRouter('/matrixLearn')">edit</v-icon>
+          color="#42b983" class="set-learn__fab" @click="pushRouter('/matrixLearn')">
+          <v-icon>edit</v-icon>
         </v-btn>
         <v-btn
           fab
           dark
           color="#42b983" class="set-learn__fab">
           <v-icon medium>reply</v-icon>
+        </v-btn>
+        <v-btn
+          fab
+          dark
+          color="#42b983" class="set-learn__fab" @click="pushRouter('/puzzleList')">
+          <i class="ef-icon-puzzle" style="font-size: 1.5rem"></i>
         </v-btn>
       </v-speed-dial>
     </div>
@@ -70,7 +76,7 @@
         vocabularies: [],
         set: {},
         curVocabulary: {},
-        fab: false
+        fab: true
       }
     },
     created() {
