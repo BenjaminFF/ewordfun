@@ -1,0 +1,73 @@
+@import "common/var";
+@import "mixins/mixins";
+
+@include b(puzzleList) {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  background-color: $--pl-background-color;
+  display: flex;
+  align-items: center;
+
+  @include e(row) {
+    display: flex;
+  }
+
+  @include e(item) {
+    width: 55rem;
+    height: 55rem;
+    background-color: white;
+    margin: 20px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    box-sizing: border-box;
+
+    &:hover{
+      cursor: pointer;
+      transition: .5s all ease-in-out;
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.16);
+    }
+  }
+
+  @include e(scrollbar) {
+    width: 100%;
+    height: 90%;
+
+    & .el-scrollbar__wrap {
+      overflow-x: hidden;
+    }
+  }
+
+  @include e(inner) {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%
+  }
+}
+
+@include b(pl-cells) {
+  --size: 3.2rem;
+  width: fit-content;
+  height: fit-content;
+  display: grid;
+  grid-template-columns: repeat(var(--row), var(--size));
+  grid-template-rows: repeat(var(--column), var(--size));
+  position: relative;
+
+  @include e(cell) {
+    margin: 4px;
+    background-color: $--pl-cell-color;
+
+    @include when(active){
+      background-color: $--pl-cell-active-color;
+    }
+  }
+}

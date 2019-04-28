@@ -16,13 +16,12 @@ $--ef-color-dark-gray: #878787 !default;
 --------------------- */
 $--app-sidebar-background-color: $--ef-color-white !default;
 $--app-main-background-color: $--ef-color-lighter !default;
-$--app-header-text-color:$--ef-color-primary !default;
-$--app-header-xs-text-color:$--ef-color-white !default;
-$--app-header-xs-bg-color:$--ef-color-primary !default;
+$--app-header-text-color: $--ef-color-primary !default;
+$--app-header-xs-text-color: $--ef-color-white !default;
+$--app-header-xs-bg-color: $--ef-color-primary !default;
 
 
-
-  /*menu
+/*menu
 -----------------*/
 $--menu-item-text-color: $--ef-color-black !default;
 $--menu-item-active-background-color: rgba($--ef-color-primary, 0.1) !default;
@@ -35,18 +34,18 @@ $--list-scrollbar-thumb-color: rgb(164, 164, 164) !default;
 
 /*matrixLearn
 -------------------*/
-$--ml-disable-color:$--ef-color-mid-gray !default;
-$--ml-success-color:$--ef-color-success !default;
-$--ml-error-color:$--ef-color-error !default;
-$--ml-loading-color:$--ef-color-primary !default;
-$--ml-background-color:$--ef-color-lighter !default;
+$--ml-disable-color: $--ef-color-mid-gray !default;
+$--ml-success-color: $--ef-color-success !default;
+$--ml-error-color: $--ef-color-error !default;
+$--ml-loading-color: $--ef-color-primary !default;
+$--ml-background-color: $--ef-color-lighter !default;
 
 $--ml-control-bar-color: $--ef-color-high-gray !default;
-$--ml-progress-background-color:$--ef-color-light-gray !default;
-$--ml-progress-color:$--ef-color-primary !default;
+$--ml-progress-background-color: $--ef-color-light-gray !default;
+$--ml-progress-color: $--ef-color-primary !default;
 
-$--ml-underline-border-color:$--ef-color-dark-gray !default;
-$--ml-underline-text-color:$--ef-color-dark-gray !default;
+$--ml-underline-border-color: $--ef-color-dark-gray !default;
+$--ml-underline-text-color: $--ef-color-dark-gray !default;
 
 $--ml-definition-text-color: $--ef-color-dark-gray !default;
 
@@ -55,17 +54,39 @@ $--ml-matrix-active-background-color: $--ef-color-light-gray !default;
 $--ml-matrix-text-color: $--ef-color-dark-gray !default;
 $--ml-matrix-border-color: $--ef-color-light-gray !default;
 
-$--ml-bottom-bar-color:$--ef-color-light-gray !default;
-$--ml-bottom-bar-button-color:$--ef-color-mid-gray !default;
-$--ml-bottom-bar-button-text-color:$--ef-color-lighter !default;
-$--ml-bottom-bar-progress-background-color:$--ef-color-lighter !default;
-$--ml-bottom-bar-plain-button-border-color:$--ef-color-mid-gray !default;
-$--ml-bottom-bar-plain-button-text-color:$--ef-color-dark-gray !default;
+$--ml-bottom-bar-color: $--ef-color-light-gray !default;
+$--ml-bottom-bar-button-color: $--ef-color-mid-gray !default;
+$--ml-bottom-bar-button-text-color: $--ef-color-lighter !default;
+$--ml-bottom-bar-progress-background-color: $--ef-color-lighter !default;
+$--ml-bottom-bar-plain-button-border-color: $--ef-color-mid-gray !default;
+$--ml-bottom-bar-plain-button-text-color: $--ef-color-dark-gray !default;
 
-$--ml-list-title-color:$--ef-color-primary !default;
+$--ml-list-title-color: $--ef-color-primary !default;
 $--ml-list-unpassed-title-color: $--ef-color-error !default;
-$--ml-list-item-text-color:$--ef-color-dark-gray !default;
-$--ml-list-item-border-color:$--ef-color-light-gray !default;
+$--ml-list-item-text-color: $--ef-color-dark-gray !default;
+$--ml-list-item-border-color: $--ef-color-light-gray !default;
+
+/*play-Puzzle
+-----------------------------*/
+$--pp-background-color: #ebebeb !default;
+$--pp-card-color:$--ef-color-dark-gray !default;
+$--pp-card-background-color:$--ef-color-white !default;
+$--pp-card-background-active-color:$--ef-color-primary !default;
+$--pp-card-active-color:$--ef-color-white !default;
+
+$--pp-cell-color:$--ef-color-dark-gray !default;
+$--pp-cell-focus-background-color: lighten($--ef-color-primary,5%) !default;
+$--pp-cell-background-color: $--ef-color-white !default;
+$--pp-cell-invisible-background-color: rgba($--ef-color-lighter,0.7) !default;
+$--pp-cell-active-background-color: darken($--ef-color-light-gray,5%) !default;
+
+
+/*puzzle-list
+----------------------------*/
+$--pl-background-color: #f0f0f0 !default;
+$--pl-cell-active-color: $--ef-color-primary !default;
+$--pl-cell-color: $--ef-color-light-gray !default;
+
 
 /* Break-point
 --------------------------*/

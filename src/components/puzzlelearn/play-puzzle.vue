@@ -1,37 +1,42 @@
 <template>
   <div class="playPuzzle">
-    <div class="playPuzzle__left">
+    <div class="sk-three-bounce" v-if="dataLoading">
+      <div class="sk-child sk-bounce1 matrix-learn__loading"></div>
+      <div class="sk-child sk-bounce2 matrix-learn__loading"></div>
+      <div class="sk-child sk-bounce3 matrix-learn__loading"></div>
+    </div>
+    <div class="playPuzzle__left animated fadeIn" v-if="!dataLoading">
       <el-scrollbar class="pp-scrollbar">
         <div v-for="card in vCards"
              class="pp-card"
              @click="activeCells(card.index,orientation.VERTICAL)">
-          <div class="pp-card__inner">
+          <div class="pp-card__inner" :class="{'is-active':card.isActive}">
             <div class="pp-card__definition">{{card.definition}}</div>
-            <div :class="{'is-active':card.isActive}" class="pp-card__index">{{card.index}}</div>
+            <div class="pp-card__index">{{card.index}}</div>
           </div>
         </div>
       </el-scrollbar>
     </div>
-    <div class="playPuzzle__middle">
+    <div class="playPuzzle__middle animated fadeIn" v-if="!dataLoading">
       <div class="playPuzzle__cells" :style="{'--row':Math.sqrt(size),'--column':Math.sqrt(size)}">
-        <div class="cell-container" v-for="cell in cells" style="margin: 3px">
-          <div class="cp-cell" style="width: 100%;height: 100%"
+        <div class="pp-cell" v-for="cell in cells">
+          <div class="pp-cell__inner"
                :class="{'is-active':cell.isActive,'is-invisible':cell.invisible}" @click="cellClick(cell)">
-            <el-input maxlength="1" class="cp-cell__input" v-on:focus="inputFocus($event,cell)" v-model="cell.c"
-                      ref="cells" @input="inputChange(cell)" :disabled="cell.answerCorrect"></el-input>
+            <el-input maxlength="1" class="pp-cell__input" v-on:focus="inputFocus($event,cell)" v-model="cell.c"
+                      ref="cells" @input="inputChange(cell)" :disabled="cell.answerCorrect" :class="{'is-invisible':cell.invisible}"></el-input>
             <div class="cp-cell__h">{{cell.h!=0&&cell.isHhead?cell.h:""}}</div>
             <div class="cp-cell__v">{{cell.v!=0&&cell.isVhead?cell.v:""}}</div>
           </div>
         </div>
       </div>
     </div>
-    <div class="playPuzzle__right">
+    <div class="playPuzzle__right animated fadeIn" v-if="!dataLoading">
       <el-scrollbar class="pp-scrollbar">
         <div v-for="card in hCards"
              class="pp-card"
              @click="activeCells(card.index,orientation.HORIZONTAL)">
-          <div class="pp-card__inner">
-            <div style="font-size: 1.2rem;">{{card.definition}}</div>
+          <div class="pp-card__inner" :class="{'is-active':card.isActive}">
+            <div class="pp-card__definition">{{card.definition}}</div>
             <div :class="{'is-active':card.isActive}" class="pp-card__index">{{card.index}}</div>
           </div>
         </div>
@@ -54,6 +59,7 @@
         cards: [],
         vCards: [],               //vertical cards
         hCards: [],                //horizontal cards
+        dataLoading: true
       }
     },
     created() {
@@ -142,6 +148,9 @@
           this.vocabularies = res.data.vocabularies;
         });
         this.initCards();
+        setTimeout(() => {
+          this.dataLoading = false;
+        },100);
       },
       cellClick(cell) {
         let rowSize = Math.sqrt(this.size);
@@ -174,6 +183,9 @@
         }
       },
       inputFocus(event, cell) {
+        if(cell.invisible){
+          return;
+        }
         if (this.isKeyBoardFocus) {
           this.cellClick(cell);
           this.isKeyBoardFocus = false;
@@ -183,6 +195,9 @@
         });
       },
       inputChange(cell) {
+        if(cell.invisible){
+          return;
+        }
         this.$refs.cells[cell.p].select();
         let answer = "";
         let correctAnswer = this.cards.find((card) => card.isActive).term;
@@ -197,21 +212,3 @@
     }
   }
 </script>
-
-<style scoped>
-
-  .cell-container {
-    width: auto;
-    height: auto;
-    position: relative;
-  }
-
-  .is-active {
-    color: black;
-  }
-
-
-  .is-invisible {
-    display: none;
-  }
-</style>

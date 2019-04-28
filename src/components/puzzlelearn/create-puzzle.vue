@@ -1,6 +1,11 @@
 <template>
   <div class="createPuzzle">
-    <div style="height: 100%;display: flex;align-items: center;">
+    <div class="sk-three-bounce" v-if="dataLoading">
+      <div class="sk-child sk-bounce1 matrix-learn__loading"></div>
+      <div class="sk-child sk-bounce2 matrix-learn__loading"></div>
+      <div class="sk-child sk-bounce3 matrix-learn__loading"></div>
+    </div>
+    <div style="height: 100%;display: flex;align-items: center;" v-if="!dataLoading" class="animated fadeIn">
       <div class="createPuzzle__cells" :style="{'--row':Math.sqrt(size),'--column':Math.sqrt(size)}">
         <div class="cp-cell" v-for="cell in cells" :class="{'is-active':cell.isActive}" @click="cellClick(cell)">
           <el-input maxlength="1" class="cp-cell__input" v-on:focus="inputFocus($event,cell)" v-model="cell.c"
@@ -10,7 +15,7 @@
         </div>
       </div>
     </div>
-    <div class="createPuzzle__setList">
+    <div class="createPuzzle__setList animated fadeIn" v-if="!dataLoading">
       <el-scrollbar>
         <el-row justify="center" type="flex" :gutter="20">
           <el-col v-for="cards in groupedCards" :span="Math.floor(24/listCol)"
@@ -34,8 +39,8 @@
         </el-row>
       </el-scrollbar>
     </div>
-    <span class="l-create-set__confirm-fab" @mouseover="confirmHovered=true" @mouseleave="confirmHovered=false"
-          :class="[{'animated tada':confirmHovered}]" @click="openDialog">
+    <span class="l-create-set__confirm-fab animated fadeIn" @mouseover="confirmHovered=true" @mouseleave="confirmHovered=false"
+          :class="[{'animated tada':confirmHovered}]" @click="openDialog" v-if="!dataLoading">
         <i class="ef-icon-tick"></i>
       </span>
     <el-dialog
@@ -80,6 +85,7 @@
         confirmHovered:false,
         dialogVisible:false,
         puzzleInfo:{},
+        dataLoading:true
       }
     },
     created() {
@@ -181,6 +187,9 @@
             card.selected = false;
           });
           this.groupedCards = this.groupCards(this.cards, this.listCol);
+          setTimeout(()=>{
+            this.dataLoading=false;
+          },200);
         });
       },
       inputFocus(event, cell) {

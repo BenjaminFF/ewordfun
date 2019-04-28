@@ -1,17 +1,34 @@
 <template>
-  <div class="puzzle-list">
-    <el-scrollbar class="list-scrollbar">
-      <div style="display: flex;align-items: center;flex-direction: column;width: 100%">
-        <div class="p-row" v-for="row in puzzles">
-          <div v-for="puzzle in row" class="puzzle">
-            <div class="createPuzzle__cells" :style="{'--row':Math.sqrt(size),'--column':Math.sqrt(size)}" style="'--size':1rem">
-              <div class="cell-container" v-for="cell in puzzle.cells" style="margin: 3px">
+  <div class="puzzleList">
+    <div class="sk-three-bounce" v-if="dataLoading">
+      <div class="sk-child sk-bounce1 matrix-learn__loading"></div>
+      <div class="sk-child sk-bounce2 matrix-learn__loading"></div>
+      <div class="sk-child sk-bounce3 matrix-learn__loading"></div>
+    </div>
+    <el-scrollbar class="puzzleList__scrollbar animated fadeIn" v-if="!dataLoading">
+      <div class="puzzleList__inner">
+        <div v-for="row in puzzles" class="puzzleList__row">
+          <div v-for="puzzle in row" class="puzzleList__item" @click="enterPuzzle(puzzle)">
+            <div class="pl-cells" :style="{'--row':Math.sqrt(size),'--column':Math.sqrt(size)}">
+              <div v-for="cell in puzzle.cells" :class="{'is-active':cell.isActive}" class="pl-cells__cell">
               </div>
+            </div>
+          </div>
+        </div>
+        <div class="puzzleList__item" v-if="puzzles.length==0" @click="createPuzzle()">
+          <div class="pl-cells" :style="{'--row':Math.sqrt(size),'--column':Math.sqrt(size)}">
+            <div v-for="cell in demoCells" :class="{'is-active':cell.isActive}" class="pl-cells__cell">
             </div>
           </div>
         </div>
       </div>
     </el-scrollbar>
+    <v-btn
+      fab
+      dark
+      class="user-set__add-button mm-fab" @click="createPuzzle">
+      <i class="ef-icon-add" style="font-size: 1.2rem"></i>
+    </v-btn>
   </div>
 </template>
 
@@ -22,6 +39,8 @@
       return {
         puzzles: [],
         size: 256,
+        dataLoading: true,
+        demoCells: []
       }
     },
     created() {
@@ -43,11 +62,35 @@
           //let puzzles = [1, 2, 3, 4, 5, 6, 7, 8, 9];
           puzzles.forEach((puzzle) => {
             puzzle.cells = this.restoreCells(puzzle.puzzle_progress);
+            puzzle.isAdd = false;
           });
-          let numsPerGroup = 3;
+          let numsPerGroup = 1;
           this.puzzles = this.groupPuzzles(puzzles, numsPerGroup);
-          console.log(this.puzzles);
+          this.makeDemoCells();
+          setTimeout(() => {
+            this.dataLoading = false;
+          }, 200);
         })
+      },
+      makeDemoCells() {
+        let cells = [], activeIndexes = [];
+        let i = 39, j = 40, k = 114, m = 130;
+        for (let t = 0; t < 12; t++) {
+          activeIndexes.push(i, j);
+          i += 16;
+          j += 16;
+        }
+        for (let t = 0; t < 12; t++) {
+          activeIndexes.push(k++, m++);
+        }
+        while (cells.length < this.size) {
+          let isActive = activeIndexes.includes(cells.length);
+          cells.push({
+            p: cells.length,
+            isActive: isActive,
+          });
+        }
+        this.demoCells = cells;
       },
       restoreCells(puzzleData) {
         let cells = [];
@@ -61,7 +104,7 @@
             h: 0,     //horizontal mark,mark 对应card的Id,0代表没有
             v: 0,     //vertical mark
             p: cells.length,
-            invisible: true,
+            isActive: false,
             isHhead: false,
             isVhead: false,
           });
@@ -77,7 +120,7 @@
           cells[p].c = (c == '?') ? "" : c;
           cells[p].h = h;
           cells[p].v = v;
-          cells[p].invisible = false;
+          cells[p].isActive = true;
           !hHeadIndices.includes(h) && h != 0 ? (cells[p].isHhead = true, hHeadIndices.push(h)) : null;
           !vHeadIndices.includes(v) && v != 0 ? (cells[p].isVhead = true, vHeadIndices.push(v)) : null;
         })
@@ -94,44 +137,16 @@
         console.log(2);
         return groupedCards;
       },
+      createPuzzle() {
+        let sid = this.$route.params.sid;
+        let uid = this.$route.params.uid;
+        this.$router.push({name: "createPuzzle", params: {uid: uid, sid: sid}});
+      },
+      enterPuzzle(puzzle) {
+        let sid = this.$route.params.sid;
+        let uid = this.$route.params.uid;
+        this.$router.push({name: 'playPuzzle', params: {uid: uid, sid: sid, pid: puzzle.pid}})
+      }
     }
   }
 </script>
-
-<style scoped>
-  .puzzle-list {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    overflow: hidden;
-    background-color: #f0f0f0;
-    display: flex;
-    align-items: center;
-  }
-
-  .p-row {
-    display: flex;
-  }
-
-  .puzzle {
-    width: 25rem;
-    height: 25rem;
-    background-color: white;
-    margin: 10px;
-    flex-grow: 0;
-    flex-shrink: 0;
-  }
-</style>
-
-<style>
-  .list-scrollbar {
-    width: 100%;
-    height: 90%;
-  }
-
-  .list-scrollbar .el-scrollbar__wrap {
-    overflow-x: hidden;
-  }
-</style>
