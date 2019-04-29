@@ -41,6 +41,20 @@
       }
     }
   }
+
+  @include e(return){
+    position: absolute;
+    left: 2rem;
+    top: 2rem;
+    color: $--cp-return-color;
+    opacity: 0.7;
+    font-size: 1.5rem;
+
+    &:hover {
+      opacity: 1;
+      cursor: pointer;
+    }
+  }
 }
 
 @include b(cp-cell) {

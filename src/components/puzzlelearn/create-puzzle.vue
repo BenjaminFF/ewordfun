@@ -63,6 +63,7 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+    <i class="createPuzzle__return ef-icon-return" @click="compReturn"></i>
   </div>
 </template>
 
@@ -439,7 +440,11 @@
             return false;
           }
         });
-      }
+      },
+      compReturn(){
+        this.$router.go(-1);
+        //this.saveTempData();
+      },
     }
   }
 </script>

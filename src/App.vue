@@ -61,7 +61,9 @@
       this.$nextTick(() => {
         let goFS = document.getElementById("app");
         goFS.addEventListener("dblclick", ()=> {
-          this.toggleFullScreen();
+          if(window.mobilecheck()){
+            this.toggleFullScreen();
+          }
         }, false);
       });
     },

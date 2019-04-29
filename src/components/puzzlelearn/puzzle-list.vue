@@ -29,6 +29,7 @@
       class="user-set__add-button mm-fab" @click="createPuzzle">
       <i class="ef-icon-add" style="font-size: 1.2rem"></i>
     </v-btn>
+    <i class="puzzleList__return ef-icon-return" @click="compReturn"></i>
   </div>
 </template>
 
@@ -146,6 +147,10 @@
         let sid = this.$route.params.sid;
         let uid = this.$route.params.uid;
         this.$router.push({name: 'playPuzzle', params: {uid: uid, sid: sid, pid: puzzle.pid}})
+      },
+      compReturn(){
+        this.$router.go(-1);
+        //this.saveTempData();
       }
     }
   }

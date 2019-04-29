@@ -10,7 +10,7 @@
         <div v-for="card in vCards"
              class="pp-card"
              @click="activeCells(card.index,orientation.VERTICAL)">
-          <div class="pp-card__inner" :class="{'is-active':card.isActive}">
+          <div class="pp-card__inner" :class="{'is-active':card.isActive,'is-success':card.isSuccess}">
             <div class="pp-card__definition">{{card.definition}}</div>
             <div class="pp-card__index">{{card.index}}</div>
           </div>
@@ -21,9 +21,12 @@
       <div class="playPuzzle__cells" :style="{'--row':Math.sqrt(size),'--column':Math.sqrt(size)}">
         <div class="pp-cell" v-for="cell in cells">
           <div class="pp-cell__inner"
-               :class="{'is-active':cell.isActive,'is-invisible':cell.invisible}" @click="cellClick(cell)">
+               :class="{'is-active':cell.isActive,'is-invisible':cell.invisible,'is-success':cell.answerCorrect}"
+               @click="cellClick(cell)">
             <el-input maxlength="1" class="pp-cell__input" v-on:focus="inputFocus($event,cell)" v-model="cell.c"
-                      ref="cells" @input="inputChange(cell)" :disabled="cell.answerCorrect" :class="{'is-invisible':cell.invisible}"></el-input>
+                      ref="cells" @input="inputChange(cell)" :disabled="cell.invisible"
+                      :class="{'is-invisible':cell.invisible}"
+            ></el-input>
             <div class="cp-cell__h">{{cell.h!=0&&cell.isHhead?cell.h:""}}</div>
             <div class="cp-cell__v">{{cell.v!=0&&cell.isVhead?cell.v:""}}</div>
           </div>
@@ -35,13 +38,14 @@
         <div v-for="card in hCards"
              class="pp-card"
              @click="activeCells(card.index,orientation.HORIZONTAL)">
-          <div class="pp-card__inner" :class="{'is-active':card.isActive}">
+          <div class="pp-card__inner" :class="{'is-active':card.isActive,'is-success':card.isSuccess}">
             <div class="pp-card__definition">{{card.definition}}</div>
             <div :class="{'is-active':card.isActive}" class="pp-card__index">{{card.index}}</div>
           </div>
         </div>
       </el-scrollbar>
     </div>
+    <i class="playPuzzle__return ef-icon-return" @click="compReturn"></i>
   </div>
 </template>
 
@@ -113,6 +117,7 @@
         cards.forEach((card, index) => {
           card.index = index + 1;
           card.isActive = false;
+          card.isSuccess = false;
         });
         this.cells.forEach((cell) => {
           if (!cell.invisible) {
@@ -150,9 +155,12 @@
         this.initCards();
         setTimeout(() => {
           this.dataLoading = false;
-        },100);
+        }, 100);
       },
       cellClick(cell) {
+        if (cell.invisible || cell.answerCorrect) {
+          return;
+        }
         let rowSize = Math.sqrt(this.size);
         if (cell.p == this.lastCellClick.p && cell.h != 0 && cell.v != 0) {
           let isHorizontalActive = (cell.p % rowSize != 0 && this.cells[cell.p - 1].isActive) || ((cell.p + 1) % rowSize != 0 && this.cells[cell.p + 1].isActive);
@@ -183,8 +191,8 @@
         }
       },
       inputFocus(event, cell) {
-        if(cell.invisible){
-          return;
+        if (cell.invisible || cell.answerCorrect) {
+          return false;
         }
         if (this.isKeyBoardFocus) {
           this.cellClick(cell);
@@ -195,8 +203,8 @@
         });
       },
       inputChange(cell) {
-        if(cell.invisible){
-          return;
+        if (cell.invisible || cell.answerCorrect) {
+          return false;
         }
         this.$refs.cells[cell.p].select();
         let answer = "";
@@ -204,10 +212,23 @@
         for (let cell of this.cells) {
           cell.isActive ? answer += cell.c : null;
         }
+        if (correctAnswer == answer) {
+          let activeCells = this.cells.filter((cell) => cell.isActive);
+          activeCells.forEach((cell) => cell.answerCorrect = true);
+          activeCells[1].p - activeCells[0].p == 1 ?
+            this.hCards.find((card)=>card.index==activeCells[0].h).isSuccess=true :
+            this.vCards.find((card)=>card.index==activeCells[0].v).isSuccess=true;
+          this.cards.forEach((card)=>{
+            console.log(card.isSuccess);
+          })
+        }
         this.cells.forEach((cell) => {
           cell.isActive && answer == correctAnswer ? cell.answerCorrect = true : null;
-          console.log(cell.answerCorrect);
         });
+      },
+      compReturn() {
+        this.$router.go(-1);
+        //this.saveTempData();
       }
     }
   }
