@@ -80,11 +80,11 @@ $--pp-card-success-bg-color:$--ef-color-primary !default;
 $--pp-cell-color:$--ef-color-dark-gray !default;
 $--pp-cell-focus-background-color: darken($--ef-color-light-gray,15%) !default;
 $--pp-cell-background-color: $--ef-color-white !default;
-$--pp-cell-invisible-background-color: rgba($--ef-color-lighter,0.7) !default;
+$--pp-cell-invisible-background-color: rgba($--ef-color-lighter,0.5) !default;
 $--pp-cell-active-background-color: darken($--ef-color-light-gray,5%) !default;
 $--pp-cell-success-background-color: $--ef-color-primary !default;
 $--pp-cell-success-color: $--ef-color-white !default;
-$--pp-return-color: $--ef-color-primary !default;
+$--pp-return-color: $--ef-color-dark-gray !default;
 
 
 /*puzzle-list
@@ -92,11 +92,11 @@ $--pp-return-color: $--ef-color-primary !default;
 $--pl-background-color: #f0f0f0 !default;
 $--pl-cell-active-color: $--ef-color-primary !default;
 $--pl-cell-color: $--ef-color-light-gray !default;
-$--pl-return-color: $--ef-color-primary !default;
+$--pl-return-color: $--ef-color-dark-gray !default;
 
 /*create-puzzle
 ---------------------------- */
-$--cp-return-color:$--ef-color-primary !default;
+$--cp-return-color:$--ef-color-dark-gray !default;
 
 
 /* Break-point

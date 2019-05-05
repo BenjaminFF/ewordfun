@@ -423,9 +423,8 @@
             puzzle_progress+="?"+h+v+p+",";          //progress中的字符用“？”表示
           }
         }
-        console.log(chvps);
-        this.puzzleInfo.chvps=chvps;
-        this.puzzleInfo.puzzle_progress=puzzle_progress;
+        this.puzzleInfo.chvps=chvps.substring(0,puzzle_progress.length-1);
+        this.puzzleInfo.puzzle_progress=puzzle_progress.substring(0,puzzle_progress.length-1);
         this.dialogVisible=true;
       },
       submitForm(formName) {
@@ -436,6 +435,7 @@
               message: '创建成功',
               type: 'success'
             });
+            this.$router.go(-1);
           } else {
             return false;
           }

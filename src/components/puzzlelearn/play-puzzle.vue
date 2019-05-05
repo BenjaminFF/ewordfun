@@ -46,6 +46,17 @@
       </el-scrollbar>
     </div>
     <i class="playPuzzle__return ef-icon-return" @click="compReturn"></i>
+    <el-dialog
+      title="你已完成了，是否再来一次？"
+      :center="true"
+      :visible.sync="dialogVisible"
+      :modal-append-to-body="false"
+      width="20%">
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="outerVisible = false">取 消</el-button>
+        <el-button type="primary" @click="innerVisible = true">打开内层 Dialog</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -63,11 +74,20 @@
         cards: [],
         vCards: [],               //vertical cards
         hCards: [],                //horizontal cards
-        dataLoading: true
+        dataLoading: true,
+        allSuccess: false
       }
     },
     created() {
       this.fetchData();
+      //close or flush browser save the data to server
+      window.onbeforeunload = (e) => {
+        if (this.$route.name == 'playPuzzle') {
+          this.update2Server();
+        } else {
+          window.onbeforeunload = null;
+        }
+      };
     },
     methods: {
       init() {
@@ -108,6 +128,27 @@
           !vHeadIndices.includes(v) && v != 0 ? (cells[p].isVhead = true, vHeadIndices.push(v)) : null;
         })
         this.cells = cells;
+      },
+      updateCellState(cells) {
+        let mMap = new Map();
+        let mCells = cells.filter((cell) => !cell.invisible);
+        mCells.forEach((cell) => {
+          if (cell.h != 0) {
+            let value = mMap.get(cell.h);
+            value != undefined ? mMap.set(cell.h, value += cell.c) : mMap.set(cell.h, cell.c);
+          }
+          if (cell.v != 0) {
+            let value = mMap.get(cell.v);
+            value != undefined ? mMap.set(cell.v, value += cell.c) : mMap.set(cell.v, cell.c);
+          }
+        })
+        for (let [key, value] of mMap) {
+          if (value == this.cards.find((card) => card.index == key).term) {
+            mCells.forEach((cell) => {
+              cell.h == key || cell.v == key ? cell.answerCorrect = true : null;
+            })
+          }
+        }
       },
       initCards() {
         let vIndices = [], hIndices = [];
@@ -153,6 +194,7 @@
           this.vocabularies = res.data.vocabularies;
         });
         this.initCards();
+        this.updateCellState(this.cells);
         setTimeout(() => {
           this.dataLoading = false;
         }, 100);
@@ -170,6 +212,9 @@
           this.activeCells(hasHorizontal ? cell.h : cell.v, !hasHorizontal ? this.orientation.VERTICAL : this.orientation.HORIZONTAL);
         }
         this.lastCellClick.p = cell.p;
+        this.$nextTick(() => {
+          this.$refs.cells[cell.p].select();
+        });
       },
       activeCells(activeIndex, orientation) {
         let rowSize = Math.sqrt(this.size);
@@ -215,12 +260,9 @@
         if (correctAnswer == answer) {
           let activeCells = this.cells.filter((cell) => cell.isActive);
           activeCells.forEach((cell) => cell.answerCorrect = true);
-          activeCells[1].p - activeCells[0].p == 1 ?
-            this.hCards.find((card)=>card.index==activeCells[0].h).isSuccess=true :
-            this.vCards.find((card)=>card.index==activeCells[0].v).isSuccess=true;
-          this.cards.forEach((card)=>{
-            console.log(card.isSuccess);
-          })
+          activeCells[1].p - activeCells[0].p == 1 ? this.hCards.find((card) => card.index == activeCells[0].h).isSuccess = true :
+            this.vCards.find((card) => card.index == activeCells[0].v).isSuccess = true;
+          this.allSuccess = (this.cards.filter((card) => card.isSuccess).length == this.hCards.length + this.vCards.length);
         }
         this.cells.forEach((cell) => {
           cell.isActive && answer == correctAnswer ? cell.answerCorrect = true : null;
@@ -228,7 +270,31 @@
       },
       compReturn() {
         this.$router.go(-1);
-        //this.saveTempData();
+        this.update2Server();
+      },
+      //返回、答对一个、刷新更新.
+      update2Server() {
+        let sid = this.$route.params.sid;
+        let uid = this.$route.params.uid;
+        let pid = this.$route.params.pid;
+        let puzzle_progress = "";
+        this.cells.forEach((cell) => {
+          if (!cell.invisible) {
+            let h = cell.h > 16 ? cell.h.toString(16) : 0 + cell.h.toString(16);
+            let v = cell.v > 16 ? cell.v.toString(16) : 0 + cell.v.toString(16);
+            let p = cell.p > 16 ? cell.p.toString(16) : 0 + cell.p.toString(16);
+            cell.c == "" ? puzzle_progress += "?" : puzzle_progress += cell.c;
+            puzzle_progress += h + v + p + ",";          //progress中的字符用“？”表示
+          }
+        });
+        this.axios.post("/api/puzzle/updateProgress", {
+          puzzleInfo: JSON.stringify({
+            sid: sid,
+            uid: uid,
+            pid: pid,
+            puzzle_progress: puzzle_progress.substring(0, puzzle_progress.length - 1)
+          })
+        });
       }
     }
   }

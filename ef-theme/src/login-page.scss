@@ -1,0 +1,33 @@
+@import "mixins/mixins";
+@import "common/var";
+
+@include b(login-page) {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  & .el-input__inner {
+    border-radius: 2rem;
+    width: 20rem;
+    cursor: text;
+  }
+
+  & .el-button {
+    border-radius: 2rem;
+  }
+
+  @include e(title) {
+    font-size: 2.2rem;
+    margin-bottom: 2rem;
+    color: $--ef-color-primary;
+    letter-spacing: 3px;
+    user-select: none;
+  }
+}

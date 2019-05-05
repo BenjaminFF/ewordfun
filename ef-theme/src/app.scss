@@ -81,3 +81,40 @@
     }
   }
 }
+
+@include b(app-sidebar){
+  width: 20rem;
+  height: 100%;
+  background-color: rgba(211, 221, 229, 0.3);
+  position: absolute;
+  left: -20rem;
+  top: 0;
+  transition: all .6s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 1;
+
+  @include e(item){
+    font-size: 1.5rem;
+    padding: 1rem 0rem;
+    color: $--ef-color-primary;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    letter-spacing: 0.5rem;
+    text-indent: 1rem;
+    height: fit-content;
+    box-sizing: border-box;
+
+    &:hover{
+      cursor: pointer;
+      border-bottom: 2px solid $--ef-color-primary;
+    }
+
+    @include when(selected){
+      border-bottom: 2px solid $--ef-color-primary;
+    }
+  }
+}
