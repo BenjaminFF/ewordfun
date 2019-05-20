@@ -8,6 +8,7 @@
   left: 0;
   top: 0;
   background-color: $--ef-color-lighter;
+  z-index: 1000;
 
   @include e(list-container) {
     width: 100%;

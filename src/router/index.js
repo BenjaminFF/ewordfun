@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import loginPage from '@/components/login-page'
-import createSet from '@/components/create-set'
+import loginPage from '@/components/user/login-page'
+import forgetpwPage from '@/components/user/forgetpw-page'
+import createSet from '@/components/userset/create-set'
 import latestLearn from '@/components/latestlearn/latest-learn'
 import userSet from '@/components/userset/user-set'
 import helpCenter from '@/components/helpcenter/help-center'
@@ -25,6 +26,11 @@ const router = new Router({
       path: '/login',
       name: 'login',
       component: loginPage
+    },
+    {
+      path: '/forget-pw',
+      name: 'forget-pw',
+      component: forgetpwPage
     },
     {
       path: '/latestLearn',
@@ -62,34 +68,47 @@ const router = new Router({
       component: matrixLearn
     },
     {
-      path:'/createPuzzle/:uid/:sid',
-      name:'createPuzzle',
-      component:createPuzzle
+      path: '/createPuzzle/:uid/:sid',
+      name: 'createPuzzle',
+      component: createPuzzle
     },
     {
-      path:'/playPuzzle/:uid/:sid/:pid',
-      name:'playPuzzle',
-      component:playPuzzle
+      path: '/playPuzzle/:uid/:sid/:pid',
+      name: 'playPuzzle',
+      component: playPuzzle
     },
     {
-      path:'/puzzleList/:uid/:sid',
-      name:'puzzleList',
-      component:puzzleList
+      path: '/puzzleList/:uid/:sid',
+      name: 'puzzleList',
+      component: puzzleList
     }
   ]
 });
 
 router.beforeEach((to, from, next) => {
-  let userInfo=localStorage.getItem('userInfo');
-  if(userInfo!=null){
-    if(Date.now()-JSON.parse(userInfo).loginTime<=24*3600*1000*15){
-      next({path:to.path=='/login'?'/latestLearn':null});
-    }else {
+  let userInfo = localStorage.getItem('userInfo');
+  let notLoginPaths = ['/login', '/forget-pw'];
+  if (userInfo != null) {
+    if (Date.now() - JSON.parse(userInfo).loginTime <= 24 * 3600 * 1000 * 15) {
+      if (notLoginPaths.includes(to.path)) {
+        next({path: '/latestLearn'});
+      } else {
+        next({path: null});
+      }
+    } else {
       localStorage.removeItem('userInfo');
-      next({path:to.path=='/login'?null:'/login'});
+      if (notLoginPaths.includes(to.path)) {
+        next({path: null});
+      } else {
+        next({path: '/latestLearn'});
+      }
     }
-  }else {
-    next({path:to.path=='/login'?null:'/login'});
+  } else {
+    if (notLoginPaths.includes(to.path)) {
+      next({path: null});
+    } else {
+      next({path: '/latestLearn'});
+    }
   }
 });
 

@@ -11,7 +11,6 @@ import util from './util'
 import '../theme/index.css'
 import materialicons from './assets/materialicons.css'
 import Vuetify, {
-  VApp, // required
   VBtn,
   VIcon,
   VSpeedDial
@@ -20,7 +19,6 @@ import { Ripple } from 'vuetify/lib/directives'
 
 Vue.use(Vuetify, {
   components: {
-    VApp,
     VBtn,
     VSpeedDial,
     VIcon

@@ -23,7 +23,7 @@
         <el-button style="width:100%" @click="submitForm('mForm')" :loading="isValidating" type="primary">登陆</el-button>
       </el-form-item>
       <div style="width: 100%;display: flex;justify-content: space-between">
-        <el-button type="text">忘记密码？</el-button>
+        <el-button type="text" @click="pushRouter('/forget-pw')">忘记密码？</el-button>
         <el-button type="text">注册</el-button>
       </div>
     </el-form>
@@ -40,7 +40,7 @@
         captchaData: "",
         showCaptcha: false,
         isValidating: false,
-        suggestEmails: []
+        suggestEmails: [],
       }
     },
     created() {
@@ -91,18 +91,23 @@
             {min: 6, max: 6, message: '请输入正确的验证码', trigger: 'blur'}
           ]
         }
+        this.resetPWformRules={
+          email: [
+            {required: true, message: '请输入邮箱地址'},
+            {type: 'email', message: '请输入正确的邮箱地址'}
+          ],
+        }
         this.formData = {
           email: "",
           password: "",
           captcha: ""
         }
+        this.resetPWformData={
+          email:""
+        }
         if (localStorage.getItem("suggestEmails") != undefined) {
           this.suggestEmails = JSON.parse(localStorage.getItem("suggestEmails"));
         }
-        this.fetchData();
-      },
-      fetchData() {
-
       },
       querySearch(queryString, cb) {
         let data = [];
@@ -155,24 +160,16 @@
             });
           }
         });
+      },
+      pushRouter(routerName){
+        this.$router.push(routerName);
+        console.log(routerName);
       }
     }
   }
 </script>
 
 <style scoped>
-  .login-page {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    background-color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
   .m-canvas {
     position: absolute;
     left: 0;

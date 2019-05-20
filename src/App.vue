@@ -121,9 +121,6 @@
         // LangStorage.setLang(this.$i18n.locale) //后面会用做切换和将用户习惯存储到本地浏览器
         langStorage.setLang(this.$i18n.locale) // 保存用户习惯
       },
-      openCreateSet() {
-        this.$router.push('/createSet');
-      },
       handleUserDropdown(command) {
         if (command == 'logout') {
           this.logout();
