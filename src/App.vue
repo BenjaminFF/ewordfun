@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <div class="app-sidebar" :style="{transform:'translateX('+offsetX+'%)'}">
-      <div v-for="item in menuItems" class="app-sidebar__item" :class="{'is-selected':item.selected}">
+      <div v-for="item in menuItems" class="app-sidebar__item" :class="{'is-selected':item.selected}"
+           @click="toggleMenuItem(item)">
         {{item.label}}
       </div>
     </div>
@@ -105,7 +106,6 @@
         }
         let selectedItem = this.menuItems.find((item) => item.pathName == this.$route.name);
         selectedItem != undefined ? selectedItem.selected = true : null;
-        console.log(selectedItem);
         this.defaultActive = this.$route.path == '/' ? '/latestLearn' : this.$route.path;
         this.fetchData();
       },
@@ -132,6 +132,13 @@
           localStorage.removeItem('userInfo');
           this.$router.push('/login');
         })
+      },
+      toggleMenuItem(menuItem) {
+        this.menuItems.forEach((item) => {
+          item.selected = false;
+        });
+        menuItem.selected = true;
+        this.$router.push({name: menuItem.pathName});
       }
     },
     watch: {
@@ -148,7 +155,6 @@
 
 <style>
   @import "../ef-theme/lib/index.css";
-  @import "../node_modules/animate.css/animate.css";
 
   #app {
     width: 100%;

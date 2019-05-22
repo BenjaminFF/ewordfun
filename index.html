@@ -37,7 +37,6 @@
 
     *{
       font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
-      font-weight: 300;
     }
 
     body, html, div {
@@ -59,24 +58,12 @@
 </head>
 <body>
 <div id="app"></div>
-<div class="splash">
-</div>
+
 <!-- built files will be auto injected -->
 <!-- 引入组件库 -->
 <script src="https://cdn.bootcss.com/vue/2.5.2/vue.min.js"></script>
 <script src="https://cdn.bootcss.com/vue-router/3.0.1/vue-router.min.js"></script>
 <script src="https://cdn.bootcss.com/element-ui/2.4.1/index.js"></script>
 
-<script>
-  window.onload = function () {
-    setTimeout(function () {
-      let elSplash = document.getElementsByClassName('splash')[0];
-      elSplash.classList.add('animated', 'fadeOut');
-      elSplash.addEventListener('animationend', function () {
-        elSplash.parentNode.removeChild(elSplash);
-      });
-    }, 100);
-  };
-</script>
 </body>
 </html>

@@ -24,7 +24,7 @@
       </el-form-item>
       <div style="width: 100%;display: flex;justify-content: space-between">
         <el-button type="text" @click="pushRouter('/forget-pw')">忘记密码？</el-button>
-        <el-button type="text">注册</el-button>
+        <el-button type="text" @click="pushRouter('/register')">注册</el-button>
       </div>
     </el-form>
   </div>
@@ -57,11 +57,11 @@
           canvas.width=canvas.offsetWidth;
           canvas.height=canvas.offsetHeight;
           let ctx = canvas.getContext("2d");
-          ctx.lineWidth =0.04;
+          ctx.lineWidth =0.05;
           ctx.clearRect(0,0,canvas.width,canvas.height);
-          let grid_cols = 60;
-          let grid_rows = 60;
-          let cell_width=canvas.width/grid_cols;
+          let grid_cols = 100;
+          let grid_rows = 100;
+          let cell_width=35;
           ctx.beginPath();
           for (let row = 0; row <= grid_rows; row++) {
             let y = row * cell_width;
@@ -91,19 +91,10 @@
             {min: 6, max: 6, message: '请输入正确的验证码', trigger: 'blur'}
           ]
         }
-        this.resetPWformRules={
-          email: [
-            {required: true, message: '请输入邮箱地址'},
-            {type: 'email', message: '请输入正确的邮箱地址'}
-          ],
-        }
         this.formData = {
           email: "",
           password: "",
           captcha: ""
-        }
-        this.resetPWformData={
-          email:""
         }
         if (localStorage.getItem("suggestEmails") != undefined) {
           this.suggestEmails = JSON.parse(localStorage.getItem("suggestEmails"));
@@ -163,7 +154,6 @@
       },
       pushRouter(routerName){
         this.$router.push(routerName);
-        console.log(routerName);
       }
     }
   }
